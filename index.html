@@ -1,1 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/svg+xml" href="fav-16x16.svg" />
+    <link rel="stylesheet" href="style.css" />
+    <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap"
+    rel="stylesheet"
+    />
+    <title>PolyPunk</title>
+</head>
+<body>
+    <nav class="main-navigation-container">
+    <a href="/">
+        <img src="logo.png" width="333" height="140" alt="#accueil" class="logo-nav"/>
+    </a>
 
+    <ul class="main-navigation-links">
+        <li><a href="#accueil">Menu</a></li>
+        <li><a href="#creer">Créer</a></li>
+        <li><a href="#rechercher">Rechercher</a></li>
+        <li class="auth-link"><a href="#connexion">Se connecter</a></li>
+    </ul>
+    </nav>
+
+    <div class="alert">Alert</div>
+
+    <div class="btnStart">Start quiz</div>
+
+    <div class="btnStop">Stop</div>
+    <div class="container">
+        <div class="question"></div>
+        <div class="choices"></div>
+
+        <div class="btnNext">Next</div>
+
+        <div class="scoreTot"></div>
+        <div class="timer"></div>
+    </div>
+        
+
+    <script src="questions.js"></script>
+    <script src="script.js"></script> 
+
+</body>
+</html>

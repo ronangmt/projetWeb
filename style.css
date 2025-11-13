@@ -1,0 +1,243 @@
+
+/* ------------------------------------ */
+/* STYLES GÉNÉRAUX            */
+/* ------------------------------------ */
+
+body {
+    background-color: #1C1C1F; /* Fond très sombre */
+    text-align: center; /* Centre le bloc NAV horizontalement */
+    color: white; /* Couleur du texte par défaut */
+}
+
+/* ------------------------------------ */
+/* CONTENEUR NAV            */
+/* ------------------------------------ */
+
+.main-navigation-container {
+    /* Propriétés du conteneur Flex */
+    display: flex;
+    align-items: center; /* Centre les éléments verticalement (logo et menu) */
+    justify-content: space-between; /* Place l'image à gauche et permet au UL de se centrer */
+    
+    /* Style du conteneur */
+    background-color: #394054;
+    border-radius: 10px;
+    height: 40px;
+    
+    /* Centrage de la barre de navigation dans le body */
+    margin: 30px auto 0 auto; 
+    padding: 5px 20px; /* Padding vertical et horizontal minimal pour l'effet */
+    width: 90%; /* Limite la largeur de la nav pour que le centrage soit visible */
+}
+
+/* ------------------------------------ */
+/* LOGO (IMG)              */
+/* ------------------------------------ */
+
+.logo-nav {
+    /* Limite la taille de l'image à la hauteur de la nav */
+    max-height: 100%; 
+    vertical-align: middle; 
+    
+    /* Espacement autour du logo */
+    margin-right: 20px; /* Espace entre le logo et le menu */
+    margin-left: 20px; /* Espace entre le bord gauche de la nav et le logo */
+}
+
+a img {
+    border: none; /* Enlève la bordure bleue par défaut sur les images dans les liens */
+}
+
+/* ------------------------------------ */
+/* MENU (UL & LI)             */
+/* ------------------------------------ */
+
+.main-navigation-links { 
+    /* CLÉS POUR LE CENTRAGE DU UL DANS LE NAV (indépendamment du logo) */
+    margin-left: auto;
+    margin-right: auto;
+    
+    /* Propriétés de la liste */
+    list-style-type: none; /* Enlève les puces */
+    padding: 0;
+    
+    /* Disposition des éléments de menu */
+    display: flex; 
+    align-items: center;
+    justify-content: space-between; 
+    width: 50%; /* Largeur de la liste pour qu'elle puisse se centrer */
+}
+
+.main-navigation-links li {
+    padding: 10px 10px;
+}
+
+.main-navigation-links a {
+    /* Style du texte */
+    color: white; 
+    text-decoration: none; 
+    font-family: 'Inter', sans-serif; /* Police moderne et lisible */
+    font-size: 16px;
+    display: block; /* Nécessaire pour que le padding du LI s'applique bien */
+}
+
+/* ------------------------------------ */
+/* INTERACTION            */
+/* ------------------------------------ */
+
+.main-navigation-links li:hover {
+    background-color: #B0C0D4; /* Gris-bleu clair au survol */
+    border-radius: 25px;
+}
+
+/* Vous pourriez vouloir assombrir le texte au survol si le fond est clair */
+.main-navigation-links li:hover a {
+    color: #394054; /* Texte de la couleur du fond nav pour un bon contraste */
+}
+
+.container {
+    width: 80%;
+    max-width: 850px;
+    padding: 30px;
+    text-align: center;
+    display: none;
+}
+
+.container h1 {
+    font-size: 36px;
+    margin-bottom: 40px;
+    text-decoration: underline;
+    text-underline-offset: 8px;
+}
+
+.container .question {
+    font-size: 26px;
+    margin-top: 20px;
+}
+
+.container .choices {
+    margin-top: 20px;
+}
+
+.choice {
+    font-size: 20px;
+    background-color: #eee;
+    color: #000;
+    margin: 10px auto;
+    padding: 10px;
+    border-radius: 5px;
+    text-align: left;
+    width: 60%;
+    cursor: pointer;
+    opacity: 0;
+    transform: translateY(50%);
+    animation: fade-in 0.5s ease forwards;
+}
+
+.choice:hover{
+    background-color: #ddd;
+}
+
+.choice.selected{
+    background-color: #007bff;
+    color: #fff;
+}
+
+.btn{
+    width: 60%;
+    font-size: 20px;
+    font-weight: 600;
+    padding: 12px 20px;
+    margin: 20px auto 0 auto;
+    background-color: #006400;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.btn:hover{
+    background-color: #08780c;
+}
+
+.scoreCard{
+    font-size: 24px;
+    margin-top: 20px;
+}
+
+.alert{
+    background-color: #5d9b63;
+    border-radius: 5px;
+    width: 100%;
+    padding: 12px;
+    position: absolute;
+    top: 0;
+    display: none;
+}
+
+.btnStart{
+    background-color: green;
+
+}
+
+.timer{
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    background-color: #1C1C1F;
+    border: 2px solid #f00;
+    font-size: 24px;
+    font-weight: 600;
+    padding: 12px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    animation: pulse 1s ease-in-out infinite;
+}
+
+/* Adding Animation to Timer */
+@keyframes pulse{
+    0%{
+        transform: scale(1);
+    }
+    50%{
+        transform: scale(1.2);
+    }
+    100%{
+        transform: scale(1);
+    }
+}
+
+/* Adding Animation to choices */
+@keyframes fade-in{
+    0%{
+        opacity: 0;
+        transform: translateY(50%);
+    }
+    100%{
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@media screen and (max-width:900px){
+    .container {
+        width: 100%;
+        margin-top: 50px;
+    }
+    .container h1{
+        font-size: 24px;
+    }
+    .container .question{
+        font-size: 22px;
+    }
+
+    .timer{
+        width: 50px;
+        height: 50px;
+        font-size: 20px;
+    }
+}
