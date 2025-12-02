@@ -1,5 +1,3 @@
-import GameLoop from './core/GameLoop.js';
-
 document.addEventListener('DOMContentLoaded', () => {
     // --- UI LOGIC (Parchemin, Thème) ---
     const settingsBtn = document.getElementById('settings-btn');
@@ -16,7 +14,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     themeToggleBtn.addEventListener('click', () => {
         body.classList.toggle('dark-mode');
-        themeToggleBtn.textContent = body.classList.contains('dark-mode') ? '🌙 Nuit' : '☀️ Jour';
+        if (body.classList.contains('dark-mode')) {
+            themeToggleBtn.textContent = '🌙 Nuit';
+        } else {
+            themeToggleBtn.textContent = '☀️ Jour';
+        }
     });
 
     // --- JEU (GAME LOOP) ---

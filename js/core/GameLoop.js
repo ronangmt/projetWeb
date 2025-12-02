@@ -1,7 +1,4 @@
-import Hero from '../entities/Hero.js';
-import MathEngine from './MathEngine.js';
-
-export default class GameLoop {
+class GameLoop {
     constructor() {
         this.hero = new Hero(100); // 100 PV max
         this.mathEngine = new MathEngine();

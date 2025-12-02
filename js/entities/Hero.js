@@ -1,4 +1,4 @@
-export default class Hero {
+class Hero {
   constructor(maxHp = 100) {
     this.maxHp = maxHp;
     this.currentHp = maxHp;

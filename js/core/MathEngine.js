@@ -1,4 +1,4 @@
-export default class MathEngine {
+class MathEngine {
     constructor() {
         // Pas d'état interne nécessaire ici, tout dépend du "streak" (série) passé en paramètre
     }
