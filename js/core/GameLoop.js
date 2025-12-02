@@ -1,9 +1,11 @@
 class GameLoop {
     constructor() {
-        this.hero = new Hero(100); // 100 PV max
+        this.hero = new Hero(100);
         this.mathEngine = new MathEngine();
         this.currentProblem = null;
         this.isGameActive = false;
+
+        this.mode = 'SOLO';
 
         // Références DOM
         this.ui = {
@@ -17,26 +19,59 @@ class GameLoop {
         };
 
         this.ui.input.style.display = 'none';
+        //this.ui.problemText.textContent = "Appuie sur Entrée";
 
-        this.ui.problemText.textContent = "Appuie sur Entrée";
-        
+        this.updateMessage("Choisis un mode<br>dans le menu haut");
+
         this.bindEvents();
+    }
+
+    updateMessage(htmlContent) {
+        // Cette fonction sert à afficher du texte (intro, game over) 
+        // à la place des maths sans casser le style
+        this.ui.problemText.innerHTML = htmlContent;
+        this.ui.problemText.style.fontSize = "1.2rem"; // Texte plus petit pour que ça rentre
+        this.ui.problemText.style.color = ""; // On enlève le rouge (si game over avant)
+    }
+
+    setMode(newMode) {
+        this.mode = newMode;
+        console.log("Mode changé pour : " + this.mode);
+        
+        let message = "";
+        if (this.mode === 'SOLO') {
+            message = "MODE SOLO<br><span style='font-size:0.8rem'>Pas de soin, Validation manuelle<br>Appuie sur Entrée</span>";
+        } else {
+            message = "MODE CAMPAGNE<br><span style='font-size:0.8rem'>Soin actif, Auto-validation<br>Appuie sur Entrée</span>";
+        }
+        
+        this.updateMessage(message);
+        
+        this.isGameActive = false;
+        this.ui.input.style.display = 'none';
     }
 
     bindEvents() {
         document.addEventListener('keydown', (e) => {
             if (!this.isGameActive && e.key === 'Enter') {
-                e.preventDefault(); // Empêche le scroll ou autre
                 this.start();
+            }
+        });
+
+        this.ui.input.addEventListener('input', (e) => {
+            if (this.isGameActive && this.mode === 'CAMPAIGN') {
+                const value = parseInt(this.ui.input.value);
+                if (value === this.currentProblem.answer) {
+                    this.checkAnswer(value);
+                }
             }
         });
 
         this.ui.form.addEventListener('submit', (e) => {
             e.preventDefault();
-
             if (this.isGameActive) {
                 const value = parseInt(this.ui.input.value);
-                if (!isNaN(value)) {
+                if (!isNaN(value) && this.ui.input.value !== '') {
                     this.checkAnswer(value);
                 }
             }
@@ -48,6 +83,7 @@ class GameLoop {
         this.isGameActive = true;
         this.hero.reset();
         this.ui.input.style.display = 'block';
+        this.ui.problemText.style.fontSize = "2rem";
         this.ui.problemText.style.color = '';
         this.updateStatsUI();
         this.nextTurn();
@@ -88,24 +124,20 @@ class GameLoop {
         this.hero.streak++;
         this.hero.totalCorrect++;
         
-        // Animation simple (log pour l'instant)
-        console.log("Correct! Streak:", this.hero.streak);
-        
-        // Petite soin tous les 10 coups ? (Optionnel)
-        if (this.hero.streak % 10 === 0) this.hero.heal(10);
-        
-        this.flashUI('success');
+        // SOIN : UNIQUEMENT EN MODE CAMPAGNE
+        if (this.mode === 'CAMPAIGN' && this.hero.streak % 10 === 0) {
+            this.hero.heal(10);
+            this.flashUI('heal'); // Petit bonus visuel vert
+        } else {
+            this.flashUI('success');
+        }
     }
 
     handleFailure() {
-        // Le héros prend des dégâts
         const damage = 15; // Valeur fixe ou évolutive
         this.hero.takeDamage(damage);
         
-        // Reset partiel ou total du streak ? 
-        // Le prompt dit : "Au bout d'un certain nombre de bonnes réponses..."
-        // Si on se trompe, on peut réduire le streak pour baisser la difficulté légèrement
-        this.hero.streak = Math.max(0, this.hero.streak - 2); 
+        this.hero.streak = 0;
         
         console.log("Faux! PV restants:", this.hero.currentHp);
         this.flashUI('error');
@@ -128,6 +160,15 @@ class GameLoop {
         } else {
             this.ui.streakDisplay.style.color = '#f39c12'; // Orange normal
         }
+    }
+
+    triggerDamageAnimation() {
+        const arena = document.getElementById('game-arena');
+        arena.classList.remove('damage-effect');
+        void arena.offsetWidth; 
+        arena.classList.add('damage-effect');
+        this.ui.heroSprite.classList.add('hero-hit');
+        setTimeout(() => this.ui.heroSprite.classList.remove('hero-hit'), 500);
     }
 
     flashUI(type) {

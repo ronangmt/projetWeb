@@ -23,4 +23,29 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- JEU (GAME LOOP) ---
     const game = new GameLoop();
+
+    const btnSolo = document.getElementById('btn-solo');
+    const btnCampaign = document.getElementById('btn-campaign');
+
+    btnSolo.addEventListener('click', (e) => {
+        e.preventDefault();
+        // Gestion visuelle de l'onglet actif
+        btnSolo.classList.add('active');
+        btnCampaign.classList.remove('active');
+        
+        // Changement de mode
+        game.setMode('SOLO');
+    });
+
+    btnCampaign.addEventListener('click', (e) => {
+        e.preventDefault();
+        // Gestion visuelle de l'onglet actif
+        btnCampaign.classList.add('active');
+        btnSolo.classList.remove('active');
+        
+        // Changement de mode
+        game.setMode('CAMPAIGN');
+    });
+
+    game.setMode('SOLO');
 });
