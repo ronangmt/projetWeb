@@ -114,7 +114,7 @@ body {
     font-weight: bold;
 }
 
-.streak-indicator {
+#streak-count {
     font-size: 1rem;
     /* color: #f39c12;  <- On peut enlever la couleur du texte, l'image suffit */
     font-weight: bold;
@@ -124,6 +124,17 @@ body {
     display: flex;
     align-items: center;
     gap: 8px; /* Espace un peu plus grand entre l'icône et le chiffre */
+
+}
+
+.streak-indicator {
+    font-size: 0.8rem;
+    color: var(--text-color);
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    margin-left: 15px;
+
 }
 
 /* --- ZONE DE JEU --- */
@@ -144,35 +155,34 @@ body {
     justify-content: center;
     align-items: center;
     font-size: 0.6rem;
-    border: 4px solid var(--text-color);
+    /* border: 4px solid var(--text-color); */
 }
 
-.character-zone {
+/* .character-zone {
     border: 1px solid red;
-}
+} */
 
-.hero-sprite{
-    width: 128px;   
-    height: 128px;
-    margin: 0 auto 10px auto;
+/* Le conteneur (Bleu) se réduit à la taille de son contenu */
+.hero-sprite {
+    width: 256px;
+    height: 256px;
+    margin: 0 auto 10px auto; /* Pour centrer le bloc lui-même */
     
-    display: flex;
-    justify-content: center;
-    align-items: flex-end;
-    border: 2px solid blue;
+    display: flex; /* Gardé pour l'alignement */
+    justify-content: center; 
+    align-items: flex-end; 
+    /* border: 2px solid blue; */
 }
 
+/* L'image (Rouge) détermine sa propre taille visible (ex: 4x plus grande) */
 .player-img {
-    width: 100%;
+    width: 100%; /* Taille affichée du sprite */
     height: 100%;
     
-    /* L'image s'adapte sans être déformée */
     object-fit: contain; 
-    
-    /* Rendu net pour le pixel art */
     image-rendering: pixelated;
     image-rendering: crisp-edges;
-    border: 2px solid red
+    /* border: 2px solid red;  */
 }
 
 /* Zone Centrale (Question) */
