@@ -16,13 +16,23 @@ class GameLoop {
             shadowSprite: document.querySelector('.shadow-sprite')
         };
 
+        this.ui.input.style.display = 'none';
+
+        this.ui.problemText.textContent = "Appuie sur Entrée";
+        
         this.bindEvents();
     }
 
     bindEvents() {
-        // On écoute la soumission du formulaire (Touche Entrée ou bouton Go sur mobile)
+        document.addEventListener('keydown', (e) => {
+            if (!this.isGameActive && e.key === 'Enter') {
+                e.preventDefault(); // Empêche le scroll ou autre
+                this.start();
+            }
+        });
+
         this.ui.form.addEventListener('submit', (e) => {
-            e.preventDefault(); // Empêche le rechargement de la page
+            e.preventDefault();
 
             if (this.isGameActive) {
                 const value = parseInt(this.ui.input.value);
@@ -37,9 +47,11 @@ class GameLoop {
         console.log("Game Loop Started");
         this.isGameActive = true;
         this.hero.reset();
+        this.ui.input.style.display = 'block';
+        this.ui.problemText.style.color = '';
         this.updateStatsUI();
         this.nextTurn();
-        this.ui.input.focus();
+        setTimeout(() => this.ui.input.focus(), 10);
     }
 
     nextTurn() {
@@ -69,7 +81,7 @@ class GameLoop {
         }
         
         this.updateStatsUI();
-        this.nextTurn(); // On passe tout de suite à la suite (pas de temps mort)
+        this.nextTurn();
     }
 
     handleSuccess() {
@@ -132,11 +144,17 @@ class GameLoop {
 
     gameOver() {
         this.isGameActive = false;
-        this.ui.problemText.textContent = "GAME OVER";
-        this.ui.problemText.style.color = 'red';
-        // Ici on pourra ajouter un écran de récapitulatif
-        alert(`Partie terminée !\nScore: ${this.hero.totalCorrect}/${this.hero.totalAttempts}`);
-        // Restart rapide
-        this.start(); 
+        this.ui.input.style.display = 'none';
+        this.ui.input.value = '';
+        this.ui.problemText.innerHTML = `
+            GAME OVER<br>
+            <span style="font-size: 0.8rem; color: var(--text-color);">
+                Score final : ${this.hero.totalCorrect}<br>
+                Appuie sur Entrée
+            </span>
+        `;
+        
+        this.ui.problemText.style.color = '#c0392b'; 
+        this.ui.problemText.style.fontSize = "2rem";
     }
 }

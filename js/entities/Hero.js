@@ -28,11 +28,4 @@ class Hero {
     this.totalCorrect = 0;
     this.totalAttempts = 0;
   }
-
-  // Pour les stats futures (Force/Rapidité)
-  getRatio() {
-    return this.totalAttempts === 0
-      ? 0
-      : this.totalCorrect / this.totalAttempts;
-  }
 }

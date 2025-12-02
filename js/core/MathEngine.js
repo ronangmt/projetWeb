@@ -1,12 +1,8 @@
 class MathEngine {
     constructor() {
-        // Pas d'état interne nécessaire ici, tout dépend du "streak" (série) passé en paramètre
+        // Pas d'état interne nécessaire ici, tout dépend du "streak" passé en paramètre
     }
-s
-    /**
-     * Génère un problème en fonction du niveau de série (streak) du joueur
-     * Retourne un objet : { text: "2 + 2", answer: 4 }
-     */
+
     generateProblem(streak) {
         let difficulty = this.getDifficultyStage(streak);
         
@@ -23,7 +19,6 @@ s
                 if (rand < 0.66) return this.randomSubtraction(10, 50)
                 return this.randomMultiplication(1, 20);
             case 4:
-                // Le chaos total (inclut la division)
                 if (rand < 0.25) return this.randomAddition(10, 100);
                 if (rand < 0.5) return this.randomSubtraction(10, 200);
                 if (rand < 0.75) return this.randomMultiplication(1, 50);
@@ -39,8 +34,6 @@ s
         if (streak < 50) return 3;
         return 4;
     }
-
-    // --- Générateurs ---
 
     randomAddition(min, max) {
         const a = this.randInt(min, max);

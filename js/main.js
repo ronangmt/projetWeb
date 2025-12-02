@@ -23,5 +23,4 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- JEU (GAME LOOP) ---
     const game = new GameLoop();
-    game.start(); // Lance le jeu dès le chargement pour l'instant
 });
