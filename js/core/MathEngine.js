@@ -11,28 +11,28 @@ class MathEngine {
                 return this.randomAddition(1, 20);
             case 2:
                 // 50% chance addition moyenne, 50% soustraction simple
-                return Math.random() > 0.5 ? this.randomAddition(10, 50) : this.randomSubtraction(1, 20);
+                return Math.random() > 0.5 ? this.randomAddition(1, 50) : this.randomSubtraction(1, 20);
             case 3:
                 // Mélange addition dure, soustraction moyenne et multiplication
                 let rand = Math.random();
-                if (rand < 0.33) return this.randomAddition(10, 100)
-                if (rand < 0.66) return this.randomSubtraction(10, 50)
-                return this.randomMultiplication(1, 20);
+                if (rand < 0.33) return this.randomAddition(1, 100)
+                if (rand < 0.66) return this.randomSubtraction(1, 50)
+                return this.randomMultiplication(1, 9);
             case 4:
-                if (rand < 0.25) return this.randomAddition(10, 100);
-                if (rand < 0.5) return this.randomSubtraction(10, 200);
-                if (rand < 0.75) return this.randomMultiplication(1, 50);
-                return this.randomDivision(1, 20);
+                if (rand < 0.25) return this.randomAddition(1, 200);
+                if (rand < 0.5) return this.randomSubtraction(1, 100);
+                if (rand < 0.75) return this.randomMultiplication(1, 20);
+                return this.randomDivision(1, 9);
             default:
                 return this.randomAddition(1, 20);
         }
     }
 
     getDifficultyStage(streak) {
-        if (streak < 10) return 1;
-        if (streak < 25) return 2;
-        if (streak < 50) return 3;
-        return 4;
+        if (streak < 5) return 1;
+        if (streak < 10) return 2;
+        if (streak < 20) return 3;
+        if (streak < 35) return 4;
     }
 
     randomAddition(min, max) {
