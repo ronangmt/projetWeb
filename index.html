@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>MathArena</title>
+    <title>MathArena - Le Combat des Chiffres</title>
 
     <link
       href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap"
@@ -13,13 +13,14 @@
     <link rel="stylesheet" href="assets/css/main.css" />
   </head>
   <body class="light-mode">
+    
     <header class="main-header">
       <button id="settings-btn" class="pixel-btn">⚙️ Options</button>
 
       <nav class="nav-links left">
         <a href="#" id="btn-solo" class="nav-item active">Solo</a>
         <a href="#" id="btn-campaign" class="nav-item">Campagne</a>
-    </nav>
+      </nav>
 
       <div class="logo-container">
         <h1>MathArena</h1>
@@ -33,14 +34,18 @@
     </header>
 
     <main id="game-arena">
+      
       <div class="character-zone hero-zone">
-        <span class="user-name">[Joueur]</span>
-        <span class="level-indicator">Niv. 1</span>
+        <div class="char-info">
+            <span class="user-name">[Joueur]</span>
+            <span class="level-indicator">Niv. 1</span>
+        </div>
+        
         <div class="sprite hero-sprite">
           <img
             class="player-img"
             src="assets/css/Personnages/Chevalier/idle_0.png"
-            alt="Chevalier"
+            alt="Héros"
           />
         </div>
 
@@ -48,31 +53,47 @@
           <div class="hp-bar-container">
             <div class="hp-bar" style="width: 100%"></div>
           </div>
-
           <div class="streak-indicator">
-            Streak.<span id="streak-count">0</span>
+            Streak <span id="streak-count">0</span>
           </div>
         </div>
       </div>
 
       <div class="center-zone">
-        <div class="shadow-boss">
-          <div class="sprite shadow-sprite">[OMBRE]</div>
-
-          <div class="problem-board">
-            <div id="math-problem" class="pixel-text">Appuie sur Entrée</div>
-
-            <form id="game-form" onsubmit="return false;">
-              <input
-                type="number"
-                id="answer-input"
-                autocomplete="off"
-                autofocus
-              />
-            </form>
-          </div>
+        <div class="problem-board">
+          <div id="math-problem" class="pixel-text">Appuie sur Entrée</div>
+          <form id="game-form" onsubmit="return false;">
+            <input
+              type="number"
+              id="answer-input"
+              autocomplete="off"
+              autofocus
+            />
+          </form>
         </div>
       </div>
+
+      <div class="character-zone enemy-zone">
+        <div class="char-info">
+            <span class="user-name">[Bot Chrono]</span>
+            <span class="level-indicator">Temps</span>
+        </div>
+
+        <div class="sprite enemy-sprite">
+            <img
+                class="enemy-img"
+                src="assets/css/Personnages/Chevalier/idle_0.png"
+                alt="Ennemi"
+              />
+        </div>
+
+        <div class="stats-bar">
+            <div class="hp-bar-container">
+                <div id="timer-bar" class="hp-bar" style="width: 100%; background-color: #3498db;"></div>
+            </div>
+        </div>
+      </div>
+
     </main>
 
     <div id="settings-modal" class="modal hidden">
@@ -90,15 +111,9 @@
           <button class="pixel-btn">🔊 On</button>
         </div>
 
-        <div class="setting-row">
-          <label>Langue :</label>
-          <select class="pixel-select">
-            <option value="fr">Français</option>
-            <option value="en">English</option>
-          </select>
-        </div>
       </div>
     </div>
+
     <script src="js/entities/Hero.js"></script>
     <script src="js/core/MathEngine.js"></script>
     <script src="js/core/GameLoop.js"></script>
