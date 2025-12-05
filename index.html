@@ -13,7 +13,6 @@
     <link rel="stylesheet" href="assets/css/main.css" />
   </head>
   <body class="light-mode">
-    
     <header class="main-header">
       <button id="settings-btn" class="pixel-btn">⚙️ Options</button>
 
@@ -34,18 +33,18 @@
     </header>
 
     <main id="game-arena">
-      
       <div class="character-zone hero-zone">
         <div class="char-info">
-            <span class="user-name">[Joueur]</span>
-            <span class="level-indicator">Niv. 1</span>
+          <span class="user-name">[Joueur]</span>
+          <span class="level-indicator">Niv. 1</span>
         </div>
-        
+
         <div class="sprite hero-sprite">
           <img
             class="player-img"
-            src="assets/css/Personnages/Chevalier/idle_0.png"
-            alt="Héros"
+            id="player-img"
+            src="js/core/Personnage/Chevalier/idle_0.png"
+            alt="Chevalier"
           />
         </div>
 
@@ -75,25 +74,28 @@
 
       <div class="character-zone enemy-zone">
         <div class="char-info">
-            <span class="user-name">[Bot Chrono]</span>
-            <span class="level-indicator">Temps</span>
+          <span class="user-name">[Bot Chrono]</span>
+          <span class="level-indicator">Temps</span>
         </div>
 
         <div class="sprite enemy-sprite">
-            <img
-                class="enemy-img"
-                src="assets/css/Personnages/Chevalier/idle_0.png"
-                alt="Ennemi"
-              />
+          <img
+            class="enemy-img"
+            src="assets/css/Personnages/Chevalier/idle_0.png"
+            alt="Ennemi"
+          />
         </div>
 
         <div class="stats-bar">
-            <div class="hp-bar-container">
-                <div id="timer-bar" class="hp-bar" style="width: 100%; background-color: #3498db;"></div>
-            </div>
+          <div class="hp-bar-container">
+            <div
+              id="timer-bar"
+              class="hp-bar"
+              style="width: 100%; background-color: #3498db"
+            ></div>
+          </div>
         </div>
       </div>
-
     </main>
 
     <div id="settings-modal" class="modal hidden">
@@ -110,7 +112,6 @@
           <label>Son :</label>
           <button class="pixel-btn">🔊 On</button>
         </div>
-
       </div>
     </div>
 
