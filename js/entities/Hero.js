@@ -1,4 +1,4 @@
-class Hero {
+export class Hero {
   constructor(maxHp = 100) {
     this.maxHp = maxHp;
     this.currentHp = maxHp;

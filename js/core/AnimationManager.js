@@ -3,14 +3,14 @@ export class AnimationManager {
     this.sprite = spriteElement;
     this.animations = animationData;
     this.frameDuration = frameDuration;
-    this.currentAnimationName = null; // Ajout pour savoir quelle anim joue
+    this.currentAnimationName = null;
     this.currentAnimation = null;
     this.currentFrameIndex = 0;
     this.intervalId = null;
   }
 
   play(animationName) {
-    // Évite de relancer la même animation si elle boucle déjà (ex: spammer le bouton WALK)
+    // 1. Empêche de relancer la même boucle (évite le bégaiement de la marche)
     if (
       this.currentAnimationName === animationName &&
       ["WALK", "IDLE"].includes(animationName)
@@ -18,7 +18,8 @@ export class AnimationManager {
       return;
     }
 
-    // Si on est mort, on ne fait plus rien (sauf si on veut ressusciter, mais ici on bloque)
+    // 2. Si on est MORT, on refuse de jouer une autre animation
+    // (Sauf si on demande explicitement WALK ou IDLE pour réinitialiser le jeu)
     if (
       this.currentAnimationName === "DEATH" &&
       animationName !== "WALK" &&
@@ -27,41 +28,37 @@ export class AnimationManager {
       return;
     }
 
-    // Arrête l'intervalle précédent
     this.stopInterval();
 
     this.currentAnimationName = animationName;
     this.currentAnimation = this.animations[animationName];
     this.currentFrameIndex = 0;
 
-    // Affiche tout de suite la première frame
+    // Affiche la première image tout de suite
     this.updateFrame();
 
-    // Définit si l'animation doit boucler (WALK/IDLE) ou se jouer une fois
     const isLooping = ["WALK", "IDLE"].includes(animationName);
-
-    // Récupère la durée (spécifique ou par défaut)
     const speed = this.currentAnimation.duration || this.frameDuration;
 
     this.intervalId = setInterval(() => {
       this.currentFrameIndex++;
 
-      // Vérifie si on est arrivé à la fin de l'animation
+      // Vérifie si on a dépassé la dernière frame
       if (this.currentFrameIndex >= this.currentAnimation.frames.length) {
         if (isLooping) {
-          // CAS 1 : C'est une boucle (WALK), on repart à 0
+          // BOUCLE (Marche) : On repart à 0
           this.currentFrameIndex = 0;
           this.updateFrame();
         } else if (animationName === "DEATH") {
-          // CAS 2 : C'est la mort, on arrête tout sur la dernière frame
+          // MORT : On reste sur la dernière frame et on arrête le temps
+          this.currentFrameIndex--; // On recule d'un cran pour rester sur la dernière image valide
           this.stopInterval();
-          // On laisse currentAnimationName sur DEATH pour bloquer les futures actions
         } else {
-          // CAS 3 : C'est une action (ATTACK/HURT), on retourne à la MARCHE
+          // ACTION (Attaque/Hurt) : Une fois fini, on retourne marcher
           this.play("WALK");
         }
       } else {
-        // Si l'animation n'est pas finie, on met à jour l'image suivante
+        // Animation normale en cours
         this.updateFrame();
       }
     }, speed);
@@ -84,7 +81,8 @@ export class AnimationManager {
   }
 }
 
-// --- Configuration et Initialisation ---
+// --- CONFIGURATION ---
+// J'ai ajouté "duration" aux attaques pour les ralentir
 
 export const characterAnimations = {
   IDLE: {
@@ -109,7 +107,7 @@ export const characterAnimations = {
       "assets/Personnage/Chevalier/walk_6.png",
       "assets/Personnage/Chevalier/walk_7.png",
     ],
-    duration: 80,
+    duration: 150, // Vitesse de marche (plus haut = plus lent)
   },
   ATTACK1: {
     frames: [
@@ -120,6 +118,7 @@ export const characterAnimations = {
       "assets/Personnage/Chevalier/attack1_4.png",
       "assets/Personnage/Chevalier/attack1_5.png",
     ],
+    duration: 120, // <-- AJOUTÉ : Ralentit l'attaque (120ms par image)
   },
   ATTACK2: {
     frames: [
@@ -130,6 +129,7 @@ export const characterAnimations = {
       "assets/Personnage/Chevalier/attack2_4.png",
       "assets/Personnage/Chevalier/attack2_5.png",
     ],
+    duration: 120, // <-- AJOUTÉ
   },
   ATTACK3: {
     frames: [
@@ -143,6 +143,7 @@ export const characterAnimations = {
       "assets/Personnage/Chevalier/attack3_7.png",
       "assets/Personnage/Chevalier/attack3_8.png",
     ],
+    duration: 100, // <-- AJOUTÉ (Celle-ci a plus de frames, donc un peu plus rapide)
   },
   HURT: {
     frames: [
@@ -151,6 +152,7 @@ export const characterAnimations = {
       "assets/Personnage/Chevalier/hurt_2.png",
       "assets/Personnage/Chevalier/hurt_3.png",
     ],
+    duration: 150, // On voit bien qu'il a mal
   },
   DEATH: {
     frames: [
@@ -159,33 +161,6 @@ export const characterAnimations = {
       "assets/Personnage/Chevalier/death_2.png",
       "assets/Personnage/Chevalier/death_3.png",
     ],
-    duration: 200,
+    duration: 300, // Ralenti pour bien voir la chute
   },
 };
-
-document.addEventListener("DOMContentLoaded", () => {
-  const spriteElement = document.getElementById("player-img"); // Assurez-vous que l'ID correspond à votre HTML
-
-  if (!spriteElement) {
-    console.error("L'élément image est introuvable");
-    return;
-  }
-
-  const manager = new AnimationManager(spriteElement, characterAnimations, 100);
-
-  // --- CHANGEMENT ICI : On lance WALK immédiatement au démarrage ---
-  manager.play("WALK");
-
-  // Liaison des boutons
-  const animationNames = Object.keys(characterAnimations);
-  animationNames.forEach((name) => {
-    // On ignore WALK/IDLE dans les boutons si on veut, ou on les laisse pour forcer l'état
-    const button = document.getElementById(`btn-${name}`);
-    if (button) {
-      button.addEventListener("click", () => {
-        // Petit fix : si on clique sur WALK alors qu'on marche déjà, play() gère ça au début de la fonction
-        manager.play(name);
-      });
-    }
-  });
-});

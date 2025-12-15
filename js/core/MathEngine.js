@@ -46,6 +46,7 @@ class MathEngine {
         if (streak < 40) return 3;
         return 4;
     }
+  }
 
     // --- GÉNÉRATEURS D'OPÉRATIONS ---
 
@@ -64,11 +65,14 @@ class MathEngine {
         return { text: `${large} - ${small}`, answer: large - small };
     }
 
-    randomMultiplication(min, max) {
-        const a = this.randInt(min, max);
-        const b = this.randInt(min, max);
-        return { text: `${a} x ${b}`, answer: a * b };
-    }
+  randomSubtraction(min, max) {
+    // On s'assure que le résultat est positif
+    const a = this.randInt(min, max);
+    const b = this.randInt(min, max);
+    const large = Math.max(a, b);
+    const small = Math.min(a, b);
+    return { text: `${large} - ${small}`, answer: large - small };
+  }
 
     randomDivision(min, max) {
         // Astuce : On génère la multiplication inverse pour avoir un compte rond.
