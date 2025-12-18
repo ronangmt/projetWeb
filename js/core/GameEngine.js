@@ -134,7 +134,13 @@ export class GameEngine {
                             authModal.classList.add('hidden');
                             this.updateIdentityUI(); // <--- MISE À JOUR DE L'INTERFACE ICI
                         }, 1000);
-                        if(result.gameData) this.statsManager.loadCloudData(result.gameData);
+                        if(result.gameData) {
+                            this.statsManager.loadCloudData(result.gameData);
+                            
+                            if (this.mode === "STATS") {
+                                this.refreshStatsView();
+                            }
+                        }
                     } else {
                         msgBox.textContent = "Compte créé ! Connectez-vous.";
                         setTimeout(() => toggleLink.click(), 1500);
