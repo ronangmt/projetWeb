@@ -10,59 +10,45 @@ export class AnimationManager {
   }
 
   play(animationName) {
-    // 1. Empêche de relancer la même boucle (évite le bégaiement de la marche)
-    if (
-      this.currentAnimationName === animationName &&
-      ["WALK", "IDLE"].includes(animationName)
-    ) {
-      return;
-    }
+  if (this.currentAnimationName === animationName && ["WALK", "IDLE"].includes(animationName)) return;
+  
+  if (this.currentAnimationName === "DEATH" && !["WALK", "IDLE"].includes(animationName)) return;
 
-    // 2. Si on est MORT, on refuse de jouer une autre animation
-    // (Sauf si on demande explicitement WALK ou IDLE pour réinitialiser le jeu)
-    if (
-      this.currentAnimationName === "DEATH" &&
-      animationName !== "WALK" &&
-      animationName !== "IDLE"
-    ) {
-      return;
-    }
+  this.stopInterval();
 
-    this.stopInterval();
-
-    this.currentAnimationName = animationName;
-    this.currentAnimation = this.animations[animationName];
-    this.currentFrameIndex = 0;
-
-    // Affiche la première image tout de suite
-    this.updateFrame();
-
-    const isLooping = ["WALK", "IDLE"].includes(animationName);
-    const speed = this.currentAnimation.duration || this.frameDuration;
-
-    this.intervalId = setInterval(() => {
-      this.currentFrameIndex++;
-
-      // Vérifie si on a dépassé la dernière frame
-      if (this.currentFrameIndex >= this.currentAnimation.frames.length) {
-        if (isLooping) {
-          // BOUCLE (Marche) : On repart à 0
-          this.currentFrameIndex = 0;
-          this.updateFrame();
-        } else if (animationName === "DEATH") {
-          // MORT : On reste sur la dernière frame et on arrête le temps
-          this.currentFrameIndex--; // On recule d'un cran pour rester sur la dernière image valide
-          this.stopInterval();
-        } else {
-          // ACTION (Attaque/Hurt) : Une fois fini, on retourne marcher
-          this.play("WALK");
-        }
-      } else {
-        // Animation normale en cours
-        this.updateFrame();
-      }
-    }, speed);
+  // Sécurité : vérifie si l'animation existe dans tes données
+  if (!this.animations[animationName]) {
+    console.warn(`L'animation ${animationName} n'existe pas.`);
+    return;
   }
+
+  this.currentAnimationName = animationName;
+  this.currentAnimation = this.animations[animationName];
+  this.currentFrameIndex = 0;
+  this.updateFrame();
+
+  const isLooping = ["WALK", "IDLE"].includes(animationName);
+  const speed = this.currentAnimation.duration || this.frameDuration;
+
+  this.intervalId = setInterval(() => {
+    this.currentFrameIndex++;
+
+    if (this.currentFrameIndex >= this.currentAnimation.frames.length) {
+      if (isLooping) {
+        this.currentFrameIndex = 0;
+      } else if (animationName === "DEATH") {
+        this.currentFrameIndex = this.currentAnimation.frames.length - 1;
+        this.stopInterval();
+        return; // On s'arrête ici
+      } else {
+        // Fin d'une animation unique (Attaque, Hurt...)
+        this.play("IDLE"); // On peut revenir en IDLE ou WALK selon ton choix
+        return;
+      }
+    }
+    this.updateFrame();
+  }, speed);
+}
 
   updateFrame() {
     if (

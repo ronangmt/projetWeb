@@ -1,6 +1,6 @@
 // js/main.js
 // IMPORT IMPORTANT : On récupère la classe depuis le fichier
-import { GameLoop } from "./core/GameLoop.js";
+import { GameEngine } from "./core/GameEngine.js";
 
 document.addEventListener("DOMContentLoaded", () => {
   // --- UI LOGIC (Parchemin, Thème) ---
@@ -24,20 +24,22 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  if (themeToggleBtn) {
-    themeToggleBtn.addEventListener("click", () => {
-      body.classList.toggle("dark-mode");
-      if (body.classList.contains("dark-mode")) {
-        themeToggleBtn.textContent = "🌙 Nuit";
-      } else {
-        themeToggleBtn.textContent = "☀️ Jour";
-      }
-    });
+  if (localStorage.getItem('theme') === 'dark') {
+      body.classList.add('dark-mode');
+      themeToggleBtn.textContent = "🌙 Nuit";
   }
 
+  // Lors du clic
+  themeToggleBtn.addEventListener("click", () => {
+      body.classList.toggle("dark-mode");
+      const isDark = body.classList.contains("dark-mode");
+      themeToggleBtn.textContent = isDark ? "🌙 Nuit" : "☀️ Jour";
+      localStorage.setItem('theme', isDark ? 'dark' : 'light');
+  });
+
   // --- JEU (GAME LOOP) ---
-  // Maintenant cela fonctionne car GameLoop est importé en haut
-  const game = new GameLoop();
+  // Maintenant cela fonctionne car GameEngine est importé en haut
+  const game = new GameEngine();
 
   const btnSolo = document.getElementById("btn-solo");
   const btnCampaign = document.getElementById("btn-campaign");
@@ -60,10 +62,12 @@ document.addEventListener("DOMContentLoaded", () => {
       btnSolo.classList.remove("active");
 
       // Changement de mode
-      game.setMode("CAMPAIGN");
+      game.setMode("CAMPAGNE");
     });
   }
 
   // Initialisation par défaut
   game.setMode("SOLO");
 });
+
+

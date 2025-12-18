@@ -5,11 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>MathArena - Le Combat des Chiffres</title>
 
-    <link
-      href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap"
-      rel="stylesheet"
-    />
-
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="assets/css/main.css" />
   </head>
   <body class="light-mode">
@@ -40,12 +36,7 @@
         </div>
 
         <div class="sprite hero-sprite">
-          <img
-            class="player-img"
-            id="player-img"
-            src="assets/Personnage/Chevalier/idle_0.png"
-            alt="Chevalier"
-          />
+          <img class="player-img" id="player-img" src="assets/Personnage/Chevalier/idle_0.png" alt="Chevalier" />
         </div>
 
         <div class="stats-bar">
@@ -62,12 +53,7 @@
         <div class="problem-board">
           <div id="math-problem" class="pixel-text">Appuie sur Entrée</div>
           <form id="game-form" onsubmit="return false;">
-            <input
-              type="number"
-              id="answer-input"
-              autocomplete="off"
-              autofocus
-            />
+            <input type="number" id="answer-input" autocomplete="off" style="display: none;" />
           </form>
         </div>
       </div>
@@ -79,20 +65,12 @@
         </div>
 
         <div class="sprite enemy-sprite">
-          <img
-            class="enemy-img"
-            src="assets/Personnage/Chevalier/idle_0.png"
-            alt="Ennemi"
-          />
+          <img class="enemy-img" src="assets/Personnage/Chevalier/idle_0.png" alt="Ennemi" />
         </div>
 
         <div class="stats-bar">
           <div class="hp-bar-container">
-            <div
-              id="timer-bar"
-              class="hp-bar"
-              style="width: 100%; background-color: #3498db"
-            ></div>
+            <div id="timer-bar" class="hp-bar" style="width: 100%; background-color: #3498db"></div>
           </div>
         </div>
       </div>
@@ -109,17 +87,12 @@
         </div>
 
         <div class="setting-row">
-          <label>Son :</label>
-          <button class="pixel-btn">🔊 On</button>
+          <label>Données :</label>
+          <button id="reset-data" class="pixel-btn" style="background-color: #e74c3c; color: white; font-size: 0.5rem;">Reset Record</button>
         </div>
       </div>
     </div>
-<<<<<<< HEAD
 
-    <script src="js/entities/Hero.js"></script>
-=======
->>>>>>> animation_perso
-    <script src="js/core/MathEngine.js"></script>
     <script type="module" src="js/main.js"></script>
   </body>
 </html>
