@@ -9,7 +9,6 @@ export class GameEngine {
         this.hero = new Hero(100);
         this.mathEngine = new MathEngine();
         
-        // CORRECTION 2 : On instancie la bonne classe
         this.authManager = new AuthManager(); 
         this.statsManager = new StatsManager(this.authManager);
         
@@ -29,11 +28,13 @@ export class GameEngine {
             timerBar: document.getElementById("timer-bar"),
             streakDisplay: document.getElementById("streak-count"),
             heroSprite: document.getElementById("player-img"),
+            globalLevelDisplay: document.getElementById("global-level"),
             arena: document.getElementById('game-arena'),
             
             // Éléments de la zone de droite
             enemyGameView: document.getElementById("enemy-game-view"),
             statsView: document.getElementById("global-stats-view"),
+            statGlobalLevel: document.getElementById("stat-global-level"),
             
             // Champs de statistiques
             statHighSolo: document.getElementById("stat-high-solo"),
@@ -49,47 +50,51 @@ export class GameEngine {
         this.animManager.play("IDLE");
         
         this.bindEvents();
-        this.setupAuthUI(); // On lance la gestion du menu connexion
+        this.setupAuthUI();
+        this.updateIdentityUI();
+        this.setupLeaderboard();
     }
 
-    // --- GESTION DE L'INTERFACE DE CONNEXION (CORRIGÉE) ---
+    // --- GESTION DE L'INTERFACE DE CONNEXION ---
     setupAuthUI() {
-        console.log("--> Initialisation Auth UI");
-
-        const loginBtn = document.getElementById('btn-login'); 
+        const loginBtn = document.getElementById('btn-login');
         const authModal = document.getElementById('auth-modal');
         const closeAuthBtn = document.getElementById('close-auth');
         const authForm = document.getElementById('auth-form');
-        
-        // NOUVEAUX ÉLÉMENTS POUR LE BASCULEMENT
         const toggleLink = document.getElementById('toggle-auth-mode');
-        const authTitle = document.getElementById('auth-title'); // Le titre h2
-        const submitBtn = authForm.querySelector('button[type="submit"]');
+        const authTitle = document.getElementById('auth-title');
+        const submitBtn = authForm ? authForm.querySelector('button[type="submit"]') : null;
         
-        let isLoginMode = true; // On commence en mode connexion
+        let isLoginMode = true;
 
-        // 1. Ouvrir la modale
+        // GESTION DU BOUTON PRINCIPAL (Connexion OU Déconnexion)
         if (loginBtn) {
             loginBtn.onclick = (e) => {
                 e.preventDefault();
+
+                // Si on est DÉJÀ connecté, ce bouton sert à se DÉCONNECTER
+                if (this.authManager.isLoggedIn()) {
+                    if(confirm("Voulez-vous vous déconnecter ?")) {
+                        this.authManager.logout(); // Supprime le token et recharge la page
+                    }
+                    return;
+                }
+
+                // Sinon, on ouvre la fenêtre de connexion
                 if (authModal) authModal.classList.remove('hidden');
             };
         }
 
-        // 2. Fermer la modale
         if (closeAuthBtn) {
             closeAuthBtn.onclick = () => {
                 if (authModal) authModal.classList.add('hidden');
             };
         }
 
-        // 3. Basculer entre Connexion et Inscription
         if (toggleLink) {
             toggleLink.onclick = (e) => {
                 e.preventDefault();
-                isLoginMode = !isLoginMode; // On inverse le mode
-
-                // Mise à jour de l'interface
+                isLoginMode = !isLoginMode;
                 if (isLoginMode) {
                     authTitle.textContent = "Connexion";
                     submitBtn.textContent = "Se connecter";
@@ -99,16 +104,13 @@ export class GameEngine {
                     submitBtn.textContent = "S'inscrire";
                     toggleLink.textContent = "Déjà un compte ? Se connecter";
                 }
-                // On vide le message d'erreur
                 document.getElementById('auth-message').textContent = "";
             };
         }
 
-        // 4. Soumission du formulaire
         if (authForm) {
             authForm.onsubmit = async (e) => {
                 e.preventDefault();
-                
                 const usernameInput = document.getElementById('auth-username').value;
                 const passwordInput = document.getElementById('auth-password').value;
                 const msgBox = document.getElementById('auth-message');
@@ -117,31 +119,29 @@ export class GameEngine {
                 msgBox.textContent = "Chargement...";
 
                 let result;
-
-                // CHOIX DE L'ACTION SELON LE MODE
                 if (isLoginMode) {
                     result = await this.authManager.login(usernameInput, passwordInput);
                 } else {
                     result = await this.authManager.register(usernameInput, passwordInput);
                 }
 
-                // GESTION DU RÉSULTAT
                 if (result.success) {
                     msgBox.style.color = "green";
                     
                     if (isLoginMode) {
                         msgBox.textContent = "Connecté !";
-                        setTimeout(() => authModal.classList.add('hidden'), 1000);
-                        // Charger les données si elles existent
+                        setTimeout(() => {
+                            authModal.classList.add('hidden');
+                            this.updateIdentityUI(); // <--- MISE À JOUR DE L'INTERFACE ICI
+                        }, 1000);
                         if(result.gameData) this.statsManager.loadCloudData(result.gameData);
                     } else {
-                        msgBox.textContent = "Compte créé ! Connectez-vous maintenant.";
-                        // On rebascule automatiquement en mode connexion
+                        msgBox.textContent = "Compte créé ! Connectez-vous.";
                         setTimeout(() => toggleLink.click(), 1500);
                     }
                 } else {
                     msgBox.style.color = "red";
-                    msgBox.textContent = result.error || "Une erreur est survenue";
+                    msgBox.textContent = result.error || "Erreur";
                 }
             };
         }
@@ -177,6 +177,11 @@ export class GameEngine {
 
     refreshStatsView() {
         const data = this.statsManager.getStats();
+
+        const globalLevel = this.statsManager.getGlobalLevel();
+        if(this.ui.statGlobalLevel) {
+            this.ui.statGlobalLevel.textContent = globalLevel;
+        }
         
         this.ui.statHighSolo.textContent = data.highScores.SOLO;
         this.ui.statHighCampagne.textContent = data.highScores.CAMPAGNE;
@@ -242,6 +247,8 @@ export class GameEngine {
         } else {
             this.flashUI("success");
         }
+
+        this.updateIdentityUI();
     }
 
     handleFailure() {
@@ -342,4 +349,80 @@ export class GameEngine {
             });
         }
     }
+
+    updateIdentityUI() {
+        const nameDisplay = document.getElementById('player-name-display');
+        const loginBtn = document.getElementById('btn-login');
+        const currentGlobalLevel = this.statsManager.getGlobalLevel();
+
+        if (this.ui.globalLevelDisplay) {
+            this.ui.globalLevelDisplay.textContent = currentGlobalLevel;
+        }
+
+        if (this.authManager.isLoggedIn()) {
+            // CAS 1 : L'utilisateur est connecté
+            if (nameDisplay) nameDisplay.textContent = this.authManager.username;
+            
+            if (loginBtn) {
+                loginBtn.textContent = "Déconnexion"; // Le bouton change de fonction
+                loginBtn.classList.add('logged-in-btn'); // (Optionnel) Pour le styliser différemment
+            }
+        } else {
+            // CAS 2 : L'utilisateur n'est pas connecté
+            if (nameDisplay) nameDisplay.textContent = "[Joueur]";
+            if (loginBtn) loginBtn.textContent = "Connexion";
+        }
+    }
+
+    setupLeaderboard() {
+        const btn = document.getElementById('btn-leaderboard');
+        const modal = document.getElementById('leaderboard-modal');
+        const closeBtn = document.getElementById('close-leaderboard');
+        const tbody = document.getElementById('leaderboard-body');
+
+        // 1. Ouvrir et charger
+        if (btn) {
+            btn.onclick = async () => {
+                if (modal) modal.classList.remove('hidden');
+                
+                // Appel au serveur
+                try {
+                    const res = await fetch('http://localhost:3000/leaderboard');
+                    const players = await res.json();
+                    
+                    // On vide le tableau
+                    tbody.innerHTML = '';
+
+                    // On remplit ligne par ligne
+                    players.forEach((player, index) => {
+                        const rank = index + 1;
+                        // On gère le cas où gameData ou highScores n'existe pas encore
+                        const score = player.gameData?.highScores?.SOLO || 0;
+                        
+                        // Classe CSS spéciale pour les 3 premiers
+                        const rankClass = rank <= 3 ? `rank-${rank}` : '';
+                        const trophy = rank === 1 ? '👑' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : `#${rank}`;
+
+                        const row = `
+                            <tr class="${rankClass}">
+                                <td>${trophy}</td>
+                                <td>${player.username}</td>
+                                <td>${score}</td>
+                            </tr>
+                        `;
+                        tbody.innerHTML += row;
+                    });
+
+                } catch (e) {
+                    tbody.innerHTML = '<tr><td colspan="3" style="color:red">Erreur connexion serveur</td></tr>';
+                }
+            };
+        }
+
+        // 2. Fermer
+        if (closeBtn) {
+            closeBtn.onclick = () => modal.classList.add('hidden');
+        }
+    }
+
 }

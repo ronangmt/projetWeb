@@ -442,3 +442,22 @@ body.dark-mode .stat-group {
     text-transform: uppercase;
     text-shadow: 1px 1px 0 #000;
 }
+
+/* --- Style du Leaderboard --- */
+#leaderboard-table th {
+    font-family: 'Press Start 2P', cursive;
+    font-size: 0.7rem;
+    color: #555;
+}
+
+#leaderboard-table td {
+    padding: 12px;
+    text-align: center;
+    font-size: 0.8rem;
+    border-bottom: 1px dashed #ccc;
+}
+
+/* Or, Argent, Bronze pour le Top 3 */
+.rank-1 { color: #f1c40f; font-weight: bold; text-shadow: 1px 1px 0 #000; } /* OR */
+.rank-2 { color: #95a5a6; font-weight: bold; text-shadow: 1px 1px 0 #000; } /* ARGENT */
+.rank-3 { color: #cd7f32; font-weight: bold; text-shadow: 1px 1px 0 #000; } /* BRONZE */

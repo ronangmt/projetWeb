@@ -14,6 +14,7 @@
       <nav class="nav-links left">
         <a href="#" id="btn-solo" class="nav-item active">Solo</a>
         <a href="#" id="btn-campaign" class="nav-item">Campagne</a>
+        <a href="#" id="btn-stats" class="nav-item">Stats</a>
       </nav>
 
       <div class="logo-container">
@@ -22,7 +23,7 @@
 
       <nav class="nav-links right">
         <a href="#" class="nav-item disabled" style="opacity:0.5;">Multi</a>
-        <a href="#" id="btn-stats" class="nav-item">Stats</a>
+        <button id="btn-leaderboard" class="nav-item pixel-btn" style=" color: gold; cursor: pointer;">🏆 Top 10</button>
         <button id="btn-login" class="btn-login">Connexion</button>
       </nav>
     </header>
@@ -30,7 +31,7 @@
     <main id="game-arena">
       <div class="character-zone hero-zone">
           <div class="char-info">
-          <span class="user-name">[Joueur]</span>
+          <span class="user-name" id="player-name-display">[Joueur]</span>
           <span class="level-indicator">Niv. <span id="global-level">1</span></span>
           </div>
 
@@ -75,6 +76,11 @@
         </div>
 
         <div id="global-stats-view" class="hidden">
+            <div class="stat-group highlight-gold">
+                <h3>⭐ Niveau global</h3>
+                <div class="big-stat-number" id="stat-global-level">1</div>
+            </div>
+
             <div class="stat-group">
                 <h3>🏆 Records</h3>
                 <div class="stat-row"><span>Solo:</span> <span id="stat-high-solo">0</span></div>
@@ -83,7 +89,7 @@
             </div>
 
             <div class="stat-group">
-                <h3>📚 Maîtrise (Niv.)</h3>
+                <h3>📚 Maitrise</h3>
                 <div class="stat-row"><span>Addition:</span> <span id="stat-lvl-add">1</span></div>
                 <div class="stat-row"><span>Soustraction:</span> <span id="stat-lvl-sub">1</span></div>
                 <div class="stat-row"><span>Multiplication:</span> <span id="stat-lvl-mul">1</span></div>
@@ -125,6 +131,26 @@
                 <a href="#" id="toggle-auth-mode">Pas de compte ? S'inscrire</a>
             </p>
             <div id="auth-message" style="color: red; font-size: 0.6rem; margin-top: 10px; height: 10px;"></div>
+        </div>
+    </div>
+
+    <div id="leaderboard-modal" class="modal hidden">
+        <div class="parchment">
+            <button id="close-leaderboard" class="close-btn">X</button>
+            <h2 style="color: #e67e22; text-shadow: 2px 2px 0 #000;">🏆 MEILLEURS GUERRIERS</h2>
+            
+            <table id="leaderboard-table" style="width: 100%; margin-top: 20px; border-collapse: collapse;">
+                <thead>
+                    <tr style="border-bottom: 2px solid #333;">
+                        <th style="padding: 10px;">Rang</th>
+                        <th>Joueur</th>
+                        <th>Score Solo</th>
+                    </tr>
+                </thead>
+                <tbody id="leaderboard-body">
+                    <tr><td colspan="3">Chargement...</td></tr>
+                </tbody>
+            </table>
         </div>
     </div>
 

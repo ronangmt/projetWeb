@@ -109,6 +109,22 @@ app.post('/save', authenticateToken, async (req, res) => {
     }
 });
 
+app.get('/leaderboard', async (req, res) => {
+    try {
+        // 1. On cherche les utilisateurs
+        // 2. On trie par 'gameData.highScores.SOLO' en ordre décroissant (-1)
+        // 3. On en prend seulement 10
+        // 4. On sélectionne uniquement le pseudo et le score (pas le mot de passe !)
+        const topPlayers = await User.find({}, 'username gameData.highScores.SOLO')
+            .sort({ 'gameData.highScores.SOLO': -1 })
+            .limit(10);
+
+        res.json(topPlayers);
+    } catch (err) {
+        res.status(500).json({ error: "Erreur récupération leaderboard" });
+    }
+});
+
 // --- LANCEMENT DU SERVEUR ---
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`🚀 Serveur lancé sur http://localhost:${PORT}`));

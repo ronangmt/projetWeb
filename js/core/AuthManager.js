@@ -65,6 +65,7 @@ export class AuthManager {
         this.username = null;
         localStorage.removeItem('matharena_token');
         localStorage.removeItem('matharena_username');
-        location.reload(); // On recharge pour reset le jeu
+        localStorage.removeItem('matharena_data_v1');
+        location.reload();
     }
 }

@@ -5,7 +5,6 @@ export class MathEngine {
         const difficulty = this.getDifficultyStage(streak);
         const rand = Math.random(); 
 
-        // J'ai ajouté le type: 'TYPE' à chaque retour
         switch (difficulty) {
             case 1: 
                 return this.randomAddition(1, 10);

@@ -1,5 +1,5 @@
 export class StatsManager {
-    constructor(authManager) { // On reçoit l'authManager
+    constructor(authManager) {
         this.storageKey = "matharena_data_v1";
         this.auth = authManager;
         this.data = this.loadLocalData();
@@ -27,7 +27,7 @@ export class StatsManager {
     loadCloudData(cloudData) {
         if (cloudData) {
             this.data = { ...this.getDefaultData(), ...cloudData };
-            this.saveData(); // Met à jour le localStorage aussi
+            this.saveData();
         }
     }
 
@@ -71,14 +71,24 @@ export class StatsManager {
 
         this.data.operations[type].count++;
         
-        // Recalcul du niveau
         const newLevel = 1 + Math.floor(this.data.operations[type].count / 10);
         this.data.operations[type].level = newLevel;
         
         this.saveData();
     }
 
-    // --- GETTERS ---
+    getGlobalLevel() {
+        const ops = this.data.operations;
+        
+        const totalSuccess = 
+            ops.ADDITION.count + 
+            ops.SUBTRACTION.count + 
+            ops.MULTIPLICATION.count + 
+            ops.DIVISION.count;
+
+        return 1 + Math.floor(totalSuccess / 40);
+    }
+
     getStats() {
         return this.data;
     }
