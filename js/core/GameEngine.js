@@ -2,12 +2,16 @@ import { AnimationManager, characterAnimations } from "./AnimationManager.js";
 import { Hero } from "../entities/Hero.js";
 import { MathEngine } from "./MathEngine.js";
 import { StatsManager } from "./StatsManager.js";
+import { AuthManager } from "./AuthManager.js"; 
 
 export class GameEngine {
     constructor() {
         this.hero = new Hero(100);
         this.mathEngine = new MathEngine();
-        this.statsManager = new StatsManager();
+        
+        // CORRECTION 2 : On instancie la bonne classe
+        this.authManager = new AuthManager(); 
+        this.statsManager = new StatsManager(this.authManager);
         
         this.isGameActive = false;
         this.mode = "SOLO";
@@ -16,6 +20,7 @@ export class GameEngine {
         this.currentTime = 10;
         this.maxTime = 10;
 
+        // Configuration de l'interface (UI)
         this.ui = {
             problemText: document.getElementById("math-problem"),
             input: document.getElementById("answer-input"),
@@ -26,11 +31,11 @@ export class GameEngine {
             heroSprite: document.getElementById("player-img"),
             arena: document.getElementById('game-arena'),
             
-            // MODIFICATION ICI : On pointe vers les éléments de DROITE
+            // Éléments de la zone de droite
             enemyGameView: document.getElementById("enemy-game-view"),
             statsView: document.getElementById("global-stats-view"),
             
-            // Champs de Stats (Inchangés)
+            // Champs de statistiques
             statHighSolo: document.getElementById("stat-high-solo"),
             statHighCampagne: document.getElementById("stat-high-campagne"),
             statMaxStreak: document.getElementById("stat-max-streak"),
@@ -44,6 +49,102 @@ export class GameEngine {
         this.animManager.play("IDLE");
         
         this.bindEvents();
+        this.setupAuthUI(); // On lance la gestion du menu connexion
+    }
+
+    // --- GESTION DE L'INTERFACE DE CONNEXION (CORRIGÉE) ---
+    setupAuthUI() {
+        console.log("--> Initialisation Auth UI");
+
+        const loginBtn = document.getElementById('btn-login'); 
+        const authModal = document.getElementById('auth-modal');
+        const closeAuthBtn = document.getElementById('close-auth');
+        const authForm = document.getElementById('auth-form');
+        
+        // NOUVEAUX ÉLÉMENTS POUR LE BASCULEMENT
+        const toggleLink = document.getElementById('toggle-auth-mode');
+        const authTitle = document.getElementById('auth-title'); // Le titre h2
+        const submitBtn = authForm.querySelector('button[type="submit"]');
+        
+        let isLoginMode = true; // On commence en mode connexion
+
+        // 1. Ouvrir la modale
+        if (loginBtn) {
+            loginBtn.onclick = (e) => {
+                e.preventDefault();
+                if (authModal) authModal.classList.remove('hidden');
+            };
+        }
+
+        // 2. Fermer la modale
+        if (closeAuthBtn) {
+            closeAuthBtn.onclick = () => {
+                if (authModal) authModal.classList.add('hidden');
+            };
+        }
+
+        // 3. Basculer entre Connexion et Inscription
+        if (toggleLink) {
+            toggleLink.onclick = (e) => {
+                e.preventDefault();
+                isLoginMode = !isLoginMode; // On inverse le mode
+
+                // Mise à jour de l'interface
+                if (isLoginMode) {
+                    authTitle.textContent = "Connexion";
+                    submitBtn.textContent = "Se connecter";
+                    toggleLink.textContent = "Pas de compte ? S'inscrire";
+                } else {
+                    authTitle.textContent = "Inscription";
+                    submitBtn.textContent = "S'inscrire";
+                    toggleLink.textContent = "Déjà un compte ? Se connecter";
+                }
+                // On vide le message d'erreur
+                document.getElementById('auth-message').textContent = "";
+            };
+        }
+
+        // 4. Soumission du formulaire
+        if (authForm) {
+            authForm.onsubmit = async (e) => {
+                e.preventDefault();
+                
+                const usernameInput = document.getElementById('auth-username').value;
+                const passwordInput = document.getElementById('auth-password').value;
+                const msgBox = document.getElementById('auth-message');
+
+                msgBox.style.color = "blue";
+                msgBox.textContent = "Chargement...";
+
+                let result;
+
+                // CHOIX DE L'ACTION SELON LE MODE
+                if (isLoginMode) {
+                    result = await this.authManager.login(usernameInput, passwordInput);
+                } else {
+                    result = await this.authManager.register(usernameInput, passwordInput);
+                }
+
+                // GESTION DU RÉSULTAT
+                if (result.success) {
+                    msgBox.style.color = "green";
+                    
+                    if (isLoginMode) {
+                        msgBox.textContent = "Connecté !";
+                        setTimeout(() => authModal.classList.add('hidden'), 1000);
+                        // Charger les données si elles existent
+                        if(result.gameData) this.statsManager.loadCloudData(result.gameData);
+                    } else {
+                        msgBox.textContent = "Compte créé ! Connectez-vous maintenant.";
+                        // On rebascule automatiquement en mode connexion
+                        setTimeout(() => toggleLink.click(), 1500);
+                    }
+                } else {
+                    msgBox.style.color = "red";
+                    msgBox.textContent = result.error || "Une erreur est survenue";
+                }
+            };
+        }
     }
 
     setMode(newMode) {
@@ -52,23 +153,17 @@ export class GameEngine {
         this.ui.input.style.display = "none";
         this.mode = newMode;
 
-        // MODIFICATION DE LA LOGIQUE D'AFFICHAGE (A DROITE MAINTENANT)
         if (this.mode === "STATS") {
-            // On cache l'ennemi et le chrono
             this.ui.enemyGameView.classList.add("hidden");
-            // On affiche le panneau de stats
             this.ui.statsView.classList.remove("hidden");
-            
             this.refreshStatsView();
             this.updateMessage(`MODE STATISTIQUES<br><small>Tes exploits s'affichent à droite !</small>`);
             return; 
         } else {
-            // Mode jeu : On réaffiche l'ennemi et on cache les stats
             this.ui.enemyGameView.classList.remove("hidden");
             this.ui.statsView.classList.add("hidden");
         }
         
-        // Configuration UI Jeu standard...
         const isCampaign = this.mode === "CAMPAGNE";
         this.ui.timerBar.parentElement.style.opacity = isCampaign ? "1" : "0.3";
         

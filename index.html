@@ -23,7 +23,7 @@
       <nav class="nav-links right">
         <a href="#" class="nav-item disabled" style="opacity:0.5;">Multi</a>
         <a href="#" id="btn-stats" class="nav-item">Stats</a>
-        <a href="#" class="nav-item disabled" style="opacity:0.5;">Perso</a>
+        <button id="btn-login" class="btn-login">Connexion</button>
       </nav>
     </header>
 
@@ -107,6 +107,25 @@
           <button id="reset-data" class="pixel-btn" style="background-color: #e74c3c; color: white; font-size: 0.5rem;">Reset Tout</button>
         </div>
       </div>
+    </div>
+
+    <div id="auth-modal" class="modal hidden">
+        <div class="parchment" style="text-align: center;">
+            <button id="close-auth" class="close-btn">X</button>
+            <h2 id="auth-title">Connexion</h2>
+            
+            <form id="auth-form" style="display: flex; flex-direction: column; gap: 10px; margin-top: 20px;">
+                <input type="text" id="auth-username" placeholder="Pseudo" class="pixel-input" required />
+                <input type="password" id="auth-password" placeholder="Mot de passe" class="pixel-input" required />
+                
+                <button type="submit" class="btn-login">Valider</button>
+            </form>
+
+            <p style="margin-top: 15px; font-size: 0.6rem;">
+                <a href="#" id="toggle-auth-mode">Pas de compte ? S'inscrire</a>
+            </p>
+            <div id="auth-message" style="color: red; font-size: 0.6rem; margin-top: 10px; height: 10px;"></div>
+        </div>
     </div>
 
     <script type="module" src="js/main.js"></script>

@@ -257,6 +257,12 @@ body.dark-mode .stat-group {
     line-height: 1.2;
 }
 
+/* Mise en valeur des chiffres */
+.stat-row span:last-child {
+    color: var(--mana-color); /* Les chiffres en bleu */
+    font-weight: bold;
+}
+
 /* =========================================
    6. COMPOSANTS GRAPHIQUES
    ========================================= */
@@ -348,6 +354,38 @@ body.dark-mode .stat-group {
     box-shadow: 1px 1px 0px var(--text-color);
 }
 
+/* --- BOUTON ACTION (Connexion / Valider) --- */
+.btn-login {
+    font-family: var(--pixel-font);
+    font-size: 0.7rem;
+    padding: 8px 12px;
+    
+    /* Couleur verte (Action positive) */
+    background-color: #2ecc71; 
+    color: white !important; 
+    
+    border: 2px solid var(--text-color);
+    box-shadow: 3px 3px 0px var(--text-color);
+    
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    
+    transition: transform 0.1s, background-color 0.2s;
+}
+
+.btn-login:hover {
+    background-color: #27ae60;
+    border-color: var(--text-color);
+}
+
+.btn-login:active {
+    transform: translate(2px, 2px);
+    box-shadow: 1px 1px 0px var(--text-color);
+}
+
 /* =========================================
    7. MODAL (SETTINGS)
    ========================================= */
@@ -389,4 +427,18 @@ body.dark-mode .stat-group {
     justify-content: space-between;
     align-items: center;
     margin: 1.5rem 0;
+}
+
+.pixel-input {
+    padding: 10px;
+    font-family: 'Press Start 2P', cursive;
+    font-size: 0.7rem;
+    border: 2px solid #4a3b2a;
+    background-color: rgba(255, 255, 255, 0.8);
+    outline: none;
+}
+
+#user-display {
+    text-transform: uppercase;
+    text-shadow: 1px 1px 0 #000;
 }

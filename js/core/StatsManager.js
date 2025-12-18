@@ -1,16 +1,14 @@
 export class StatsManager {
-    constructor() {
+    constructor(authManager) { // On reçoit l'authManager
         this.storageKey = "matharena_data_v1";
-        this.data = this.loadData();
+        this.auth = authManager;
+        this.data = this.loadLocalData();
     }
 
     // Structure des données par défaut
     getDefaultData() {
         return {
-            highScores: {
-                SOLO: 0,
-                CAMPAGNE: 0
-            },
+            highScores: { SOLO: 0, CAMPAGNE: 0 },
             maxStreak: 0,
             operations: {
                 ADDITION: { count: 0, level: 1 },
@@ -21,16 +19,26 @@ export class StatsManager {
         };
     }
 
-    loadData() {
+    loadLocalData() {
         const stored = localStorage.getItem(this.storageKey);
-        if (stored) {
-            return { ...this.getDefaultData(), ...JSON.parse(stored) };
+        return stored ? { ...this.getDefaultData(), ...JSON.parse(stored) } : this.getDefaultData();
+    }
+
+    loadCloudData(cloudData) {
+        if (cloudData) {
+            this.data = { ...this.getDefaultData(), ...cloudData };
+            this.saveData(); // Met à jour le localStorage aussi
         }
-        return this.getDefaultData();
     }
 
     saveData() {
+        // 1. Sauvegarde locale (backup)
         localStorage.setItem(this.storageKey, JSON.stringify(this.data));
+        
+        // 2. Sauvegarde Cloud (si connecté)
+        if (this.auth && this.auth.isLoggedIn()) {
+            this.auth.saveCloudData(this.data);
+        }
     }
 
     resetData() {
