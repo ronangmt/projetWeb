@@ -20,9 +20,9 @@
 body.dark-mode {
     /* Palette Mode Nuit */
     --bg-color: #1a1a2e;      /* Bleu nuit profond */
-    --text-color: white;    /* Blanc */
+    --text-color: #ecf0f1;    /* Blanc cassé */
     --ui-bg: #16213e;         /* Bleu sombre */
-    --accent-color: #4a3b2a;  /* Encre marron foncé */
+    --accent-color: #34495e;  
 }
 
 /* =========================================
@@ -45,6 +45,11 @@ body {
     transition: background-color 0.5s ease;
 }
 
+/* Utilitaire pour cacher les éléments (Switch Stats/Jeu) */
+.hidden {
+    display: none !important;
+}
+
 /* =========================================
    3. HEADER (Barre de Navigation)
    ========================================= */
@@ -56,7 +61,7 @@ body {
     justify-content: space-between;
     align-items: center;
     padding: 0 2rem;
-    flex-shrink: 0; /* Empêche le header de s'écraser */
+    flex-shrink: 0;
 }
 
 .logo-container h1 {
@@ -69,7 +74,7 @@ body {
 .nav-links {
     display: flex;
     gap: 15px;
-    flex: 1; /* Permet de centrer le logo */
+    flex: 1; 
 }
 
 .nav-links.left { justify-content: flex-end; }
@@ -89,21 +94,38 @@ body {
     background-color: rgba(255, 255, 255, 0.2);
 }
 
+/* Style pour les liens désactivés (Multi, Perso) */
+.nav-item.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
 /* =========================================
    4. GAME ARENA (Layout Principal)
    ========================================= */
 #game-arena {
-    flex: 1; /* Prend tout l'espace restant */
+    flex: 1; 
     width: 100%;
     max-width: 1400px;
     margin: 0 auto;
     padding: 2rem;
     
     display: flex;
-    justify-content: space-between; /* Gauche - Espace - Droite */
-    
-    /* Alignement vertical par défaut : en bas pour que les pieds touchent le sol */
-    align-items: flex-end; 
+    justify-content: space-between; 
+    align-items: flex-end; /* Par défaut, aligné en bas */
+}
+
+/* Animation de tremblement quand on prend des dégâts */
+.damage-effect {
+    animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
+}
+
+@keyframes shake {
+  10%, 90% { transform: translate3d(-2px, 0, 0); }
+  20%, 80% { transform: translate3d(4px, 0, 0); }
+  30%, 50%, 70% { transform: translate3d(-6px, 0, 0); }
+  40%, 60% { transform: translate3d(6px, 0, 0); }
 }
 
 /* --- BLOCS PERSONNAGES (Gauche et Droite) --- */
@@ -111,44 +133,46 @@ body {
     width: 300px;
     display: flex;
     flex-direction: column;
-    padding-bottom: 2rem; /* Un peu d'espace avec le bas */
+    padding-bottom: 2rem; 
+    position: relative; /* Pour positionner les vues */
 }
 
+/* Zone Héros (Gauche) */
+.hero-zone {
+    align-items: flex-start;
+    text-align: left;
+    height: 100%; /* Important pour que les stats prennent la place */
+    justify-content: flex-end; /* Le sprite reste en bas */
+}
+
+/* Zone Ennemi (Droite) */
+.enemy-zone {
+    align-items: flex-end; 
+    text-align: right;
+}
+
+/* Infos communes (Nom, Niv) */
 .char-info {
     margin-bottom: 10px;
     display: flex;
     flex-direction: column;
     gap: 5px;
+    width: 100%;
 }
 
 .user-name { font-size: 0.9rem; font-weight: bold; }
 .level-indicator { font-size: 0.7rem; opacity: 0.8; }
 
-/* Zone Héros (Gauche) */
-.hero-zone {
-    align-items: flex-start; /* Aligné à gauche */
-    text-align: left;
-}
-
-/* Zone Ennemi (Droite) */
-.enemy-zone {
-    align-items: flex-end; /* Aligné à droite */
-    text-align: right;
-}
-
 /* --- ZONE CENTRALE (Question) --- */
 .center-zone {
-    flex: 1; /* Prend la place au milieu */
+    flex: 1;
     display: flex;
     flex-direction: column;
     align-items: center;
-    
-    /* MAGIE ICI : On colle la question en HAUT de l'arène */
     align-self: flex-start; 
-    margin-top: 5vh; /* Marge du haut (5% de l'écran) */
+    margin-top: 5vh; 
 }
 
-/* Le tableau blanc */
 .problem-board {
     background: white;
     padding: 2rem;
@@ -166,12 +190,80 @@ body {
 }
 
 /* =========================================
-   5. COMPOSANTS GRAPHIQUES
+   5. VUES ET STATISTIQUES (MODIFIÉ POUR LA DROITE)
+   ========================================= */
+
+/* Conteneur Vue Jeu Droite (Sprite Ennemi + Timer) */
+#enemy-game-view {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end; /* Aligné à droite comme le parent */
+}
+
+/* Conteneur Vue Stats (Remplace l'ennemi à droite) */
+#global-stats-view {
+    width: 100%;
+    /* On remonte un peu le panneau pour qu'il soit centré verticalement dans la zone */
+    margin-bottom: auto; 
+    margin-top: 20px;
+    
+    background: rgba(0, 0, 0, 0.05);
+    border: 2px solid var(--text-color);
+    padding: 15px;
+    border-radius: 4px;
+    
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    
+    /* IMPORTANT POUR LA ZONE DE DROITE : On force l'alignement du texte à GAUCHE dans la boîte */
+    text-align: left; 
+    align-items: stretch; /* Prend toute la largeur */
+}
+
+/* Adaptation Mode Nuit pour le panneau stats */
+body.dark-mode #global-stats-view {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.stat-group {
+    width: 100%;
+    border-bottom: 2px dashed rgba(74, 59, 42, 0.3);
+    padding-bottom: 10px;
+}
+body.dark-mode .stat-group {
+    border-bottom-color: rgba(255, 255, 255, 0.3);
+}
+
+.stat-group:last-child {
+    border-bottom: none;
+}
+
+.stat-group h3 {
+    font-size: 0.75rem;
+    color: var(--hp-color);
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.stat-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.65rem;
+    margin-bottom: 6px;
+    line-height: 1.2;
+}
+
+/* =========================================
+   6. COMPOSANTS GRAPHIQUES
    ========================================= */
 
 /* --- SPRITES --- */
 .sprite {
-    width: 200px;  /* Taille de la zone image */
+    width: 200px;
     height: 200px;
     margin-bottom: 10px;
 }
@@ -179,13 +271,10 @@ body {
 .player-img, .enemy-img {
     width: 100%;
     height: 100%;
-    object-fit: contain; /* L'image ne sera pas déformée */
-    
-    /* Rendu Pixel Art très net */
+    object-fit: contain;
     image-rendering: pixelated; 
 }
 
-/* Miroir pour l'ennemi (regarde vers la gauche) */
 .enemy-sprite {
     transform: scaleX(-1);
 }
@@ -194,7 +283,7 @@ body {
 .stats-bar {
     width: 100%;
     display: flex;
-    flex-direction: column; /* Barres empilées */
+    flex-direction: column;
     gap: 5px;
 }
 
@@ -210,13 +299,12 @@ body {
     height: 100%;
     background-color: var(--hp-color);
     width: 100%;
-    transition: width 0.3s ease-out; /* Animation fluide */
+    transition: width 0.3s ease-out;
 }
 
-/* Style spécifique pour la barre de temps */
 #timer-bar {
     background-color: var(--mana-color);
-    transition: width 0.1s linear; /* Linéaire pour le temps */
+    transition: width 0.1s linear;
 }
 
 .streak-indicator {
@@ -235,10 +323,9 @@ body {
     text-align: center;
     outline: none;
     background: transparent;
-    color: #000;
+    color: #000; /* Toujours noir car sur fond blanc */
 }
 
-/* Suppression des flèches dans l'input number */
 #answer-input::-webkit-outer-spin-button,
 #answer-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
 #answer-input[type=number] { -moz-appearance: textfield; }
@@ -262,7 +349,7 @@ body {
 }
 
 /* =========================================
-   6. MODAL (SETTINGS)
+   7. MODAL (SETTINGS)
    ========================================= */
 .modal {
     position: fixed;
@@ -274,7 +361,7 @@ body {
     align-items: center;
     z-index: 999;
 }
-.modal.hidden { display: none; }
+.modal.hidden { display: none !important; }
 
 .parchment {
     background-color: #f4e4bc;
@@ -283,6 +370,7 @@ body {
     width: 400px;
     position: relative;
     box-shadow: 10px 10px 0px rgba(0,0,0,0.5);
+    color: #4a3b2a; /* Force le texte marron même en dark mode sur le parchemin */
 }
 
 .close-btn {
@@ -302,8 +390,3 @@ body {
     align-items: center;
     margin: 1.5rem 0;
 }
-
-/* =========================================
-   7. ANIMATIONS & EFFETS
-   ========================================= */
-

@@ -1,10 +1,7 @@
-// js/main.js
-// IMPORT IMPORTANT : On récupère la classe depuis le fichier
 import { GameEngine } from "./core/GameEngine.js";
 
 document.addEventListener("DOMContentLoaded", () => {
-  // --- UI LOGIC (Parchemin, Thème) ---
-  // (Votre code existant, inchangé)
+  // --- UI LOGIC ---
   const settingsBtn = document.getElementById("settings-btn");
   const closeSettingsBtn = document.getElementById("close-settings");
   const settingsModal = document.getElementById("settings-modal");
@@ -12,13 +9,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const body = document.body;
 
   if (settingsBtn) {
-    // Petite sécurité si jamais le bouton n'existe pas
-    settingsBtn.addEventListener("click", () =>
-      settingsModal.classList.remove("hidden")
-    );
-    closeSettingsBtn.addEventListener("click", () =>
-      settingsModal.classList.add("hidden")
-    );
+    settingsBtn.addEventListener("click", () => settingsModal.classList.remove("hidden"));
+    closeSettingsBtn.addEventListener("click", () => settingsModal.classList.add("hidden"));
     settingsModal.addEventListener("click", (e) => {
       if (e.target === settingsModal) settingsModal.classList.add("hidden");
     });
@@ -29,7 +21,6 @@ document.addEventListener("DOMContentLoaded", () => {
       themeToggleBtn.textContent = "🌙 Nuit";
   }
 
-  // Lors du clic
   themeToggleBtn.addEventListener("click", () => {
       body.classList.toggle("dark-mode");
       const isDark = body.classList.contains("dark-mode");
@@ -37,37 +28,45 @@ document.addEventListener("DOMContentLoaded", () => {
       localStorage.setItem('theme', isDark ? 'dark' : 'light');
   });
 
-  // --- JEU (GAME LOOP) ---
-  // Maintenant cela fonctionne car GameEngine est importé en haut
+  // --- JEU ---
   const game = new GameEngine();
 
   const btnSolo = document.getElementById("btn-solo");
   const btnCampaign = document.getElementById("btn-campaign");
+  const btnStats = document.getElementById("btn-stats"); // NOUVEAU
 
-  if (btnSolo && btnCampaign) {
+  const navButtons = [btnSolo, btnCampaign, btnStats];
+
+  function setActiveButton(activeBtn) {
+      navButtons.forEach(btn => btn ? btn.classList.remove("active") : null);
+      if(activeBtn) activeBtn.classList.add("active");
+  }
+
+  if (btnSolo) {
     btnSolo.addEventListener("click", (e) => {
       e.preventDefault();
-      // Gestion visuelle de l'onglet actif
-      btnSolo.classList.add("active");
-      btnCampaign.classList.remove("active");
-
-      // Changement de mode
+      setActiveButton(btnSolo);
       game.setMode("SOLO");
     });
+  }
 
+  if (btnCampaign) {
     btnCampaign.addEventListener("click", (e) => {
       e.preventDefault();
-      // Gestion visuelle de l'onglet actif
-      btnCampaign.classList.add("active");
-      btnSolo.classList.remove("active");
-
-      // Changement de mode
+      setActiveButton(btnCampaign);
       game.setMode("CAMPAGNE");
     });
   }
 
-  // Initialisation par défaut
+  // Écouteur pour le bouton stats
+  if (btnStats) {
+      btnStats.addEventListener("click", (e) => {
+          e.preventDefault();
+          setActiveButton(btnStats);
+          game.setMode("STATS");
+      });
+  }
+
+  // Init
   game.setMode("SOLO");
 });
-
-

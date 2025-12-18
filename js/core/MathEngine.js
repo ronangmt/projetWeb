@@ -1,4 +1,3 @@
-// MathEngine.js
 export class MathEngine {
     constructor() {}
 
@@ -6,6 +5,7 @@ export class MathEngine {
         const difficulty = this.getDifficultyStage(streak);
         const rand = Math.random(); 
 
+        // J'ai ajouté le type: 'TYPE' à chaque retour
         switch (difficulty) {
             case 1: 
                 return this.randomAddition(1, 10);
@@ -37,7 +37,7 @@ export class MathEngine {
     randomAddition(min, max) {
         const a = this.randInt(min, max);
         const b = this.randInt(min, max);
-        return { text: `${a} + ${b}`, answer: a + b };
+        return { text: `${a} + ${b}`, answer: a + b, type: 'ADDITION' };
     }
 
     randomSubtraction(min, max) {
@@ -45,13 +45,13 @@ export class MathEngine {
         const b = this.randInt(min, max);
         const large = Math.max(a, b);
         const small = Math.min(a, b);
-        return { text: `${large} - ${small}`, answer: large - small };
+        return { text: `${large} - ${small}`, answer: large - small, type: 'SUBTRACTION' };
     }
 
     randomMultiplication(min, max) {
         const a = this.randInt(min, max);
         const b = this.randInt(min, max);
-        return { text: `${a} × ${b}`, answer: a * b };
+        return { text: `${a} × ${b}`, answer: a * b, type: 'MULTIPLICATION' };
     }
 
     randomDivision(min, max) {
@@ -59,7 +59,7 @@ export class MathEngine {
         const divisor = this.randInt(realMin, max);
         const result = this.randInt(min, max);
         const dividend = divisor * result;
-        return { text: `${dividend} ÷ ${divisor}`, answer: result };
+        return { text: `${dividend} ÷ ${divisor}`, answer: result, type: 'DIVISION' };
     }
 
     randInt(min, max) {
