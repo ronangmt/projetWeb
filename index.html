@@ -4,7 +4,10 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>MathArena - Le Combat des Chiffres</title>
-    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap"
+      rel="stylesheet"
+    />
     <link rel="stylesheet" href="assets/css/main.css" />
   </head>
   <body class="light-mode">
@@ -22,81 +25,122 @@
       </div>
 
       <nav class="nav-links right">
-        <a href="#" class="nav-item disabled" style="opacity:0.5;">Multi</a>
-        <button id="btn-leaderboard" class="nav-item pixel-btn" style=" color: gold; cursor: pointer;">🏆 Top 10</button>
+        <a href="#" id="btn-multi" class="nav-item">Multi</a>
+        <button
+          id="btn-leaderboard"
+          class="nav-item pixel-btn"
+          style="color: gold; cursor: pointer"
+        >
+          🏆 Top 10
+        </button>
         <button id="btn-login" class="btn-login">Connexion</button>
       </nav>
     </header>
 
     <main id="game-arena">
       <div class="character-zone hero-zone">
-          <div class="char-info">
+        <div class="char-info">
           <span class="user-name" id="player-name-display">[Joueur]</span>
-          <span class="level-indicator">Niv. <span id="global-level">1</span></span>
-          </div>
+          <span class="level-indicator"
+            >Niv. <span id="global-level">1</span></span
+          >
+        </div>
 
-          <div class="sprite hero-sprite">
-          <img class="player-img" id="player-img" src="assets/Personnage/Chevalier/idle_0.png" alt="Chevalier" />
-          </div>
+        <div class="sprite hero-sprite">
+          <img
+            class="player-img"
+            id="player-img"
+            src="assets/Personnage/Chevalier/idle_0.png"
+            alt="Chevalier"
+          />
+        </div>
 
-          <div class="stats-bar">
+        <div class="stats-bar">
           <div class="hp-bar-container">
-              <div class="hp-bar" style="width: 100%"></div>
+            <div class="hp-bar" style="width: 100%"></div>
           </div>
           <div class="streak-indicator">
-              Streak <span id="streak-count">0</span>
+            Streak <span id="streak-count">0</span>
           </div>
-          </div>
+        </div>
       </div>
 
       <div class="center-zone">
         <div class="problem-board">
           <div id="math-problem" class="pixel-text">Choisis un mode</div>
           <form id="game-form" onsubmit="return false;">
-            <input type="number" id="answer-input" autocomplete="off" style="display: none;" />
+            <input
+              type="number"
+              id="answer-input"
+              autocomplete="off"
+              style="display: none"
+            />
           </form>
         </div>
       </div>
 
       <div class="character-zone enemy-zone">
-        
         <div id="enemy-game-view">
-            <div class="char-info">
-              <span class="user-name">[Bot Chrono]</span>
-              <span class="level-indicator">Temps</span>
+          <div class="char-info">
+            <span class="user-name" id="enemy-name">[Adversaire]</span>
+            <span class="level-indicator" id="enemy-score">Prêt ?</span>
+          </div>
+
+          <div class="sprite enemy-sprite">
+            <img
+              class="enemy-img"
+              id="enemy-img"
+              src="assets/Personnage/Chevalier/idle_0.png"
+              alt="Ennemi"
+            />
+          </div>
+
+          <div class="stats-bar">
+            <div class="hp-bar-container">
+              <div
+                id="timer-bar"
+                class="hp-bar"
+                style="width: 100%; background-color: #3498db"
+              ></div>
             </div>
-            <div class="sprite enemy-sprite">
-              <img class="enemy-img" src="assets/Personnage/Chevalier/idle_0.png" alt="Ennemi" />
-            </div>
-            <div class="stats-bar">
-              <div class="hp-bar-container">
-                <div id="timer-bar" class="hp-bar" style="width: 100%; background-color: #3498db"></div>
-              </div>
-            </div>
+          </div>
         </div>
 
         <div id="global-stats-view" class="hidden">
-            <div class="stat-group highlight-gold">
-                <h3>⭐ Niveau global</h3>
-                <div class="big-stat-number" id="stat-global-level">1</div>
-            </div>
+          <div class="stat-group highlight-gold">
+            <h3>⭐ Niveau global</h3>
+            <div class="big-stat-number" id="stat-global-level">1</div>
+          </div>
 
-            <div class="stat-group">
-                <h3>🏆 Records</h3>
-                <div class="stat-row"><span>Solo:</span> <span id="stat-high-solo">0</span></div>
-                <div class="stat-row"><span>Campagne:</span> <span id="stat-high-campagne">0</span></div>
-                <div class="stat-row"><span>Max Streak:</span> <span id="stat-max-streak">0</span></div>
+          <div class="stat-group">
+            <h3>🏆 Records</h3>
+            <div class="stat-row">
+              <span>Solo:</span> <span id="stat-high-solo">0</span>
             </div>
+            <div class="stat-row">
+              <span>Campagne:</span> <span id="stat-high-campagne">0</span>
+            </div>
+            <div class="stat-row">
+              <span>Max Streak:</span> <span id="stat-max-streak">0</span>
+            </div>
+          </div>
 
-            <div class="stat-group">
-                <h3>📚 Maitrise</h3>
-                <div class="stat-row"><span>Addition:</span> <span id="stat-lvl-add">1</span></div>
-                <div class="stat-row"><span>Soustraction:</span> <span id="stat-lvl-sub">1</span></div>
-                <div class="stat-row"><span>Multiplication:</span> <span id="stat-lvl-mul">1</span></div>
-                <div class="stat-row"><span>Division:</span> <span id="stat-lvl-div">1</span></div>
+          <div class="stat-group">
+            <h3>📚 Maitrise</h3>
+            <div class="stat-row">
+              <span>Addition:</span> <span id="stat-lvl-add">1</span>
             </div>
+            <div class="stat-row">
+              <span>Soustraction:</span> <span id="stat-lvl-sub">1</span>
+            </div>
+            <div class="stat-row">
+              <span>Multiplication:</span> <span id="stat-lvl-mul">1</span>
+            </div>
+            <div class="stat-row">
+              <span>Division:</span> <span id="stat-lvl-div">1</span>
+            </div>
+          </div>
         </div>
-
       </div>
     </main>
 
@@ -110,50 +154,177 @@
         </div>
         <div class="setting-row">
           <label>Données :</label>
-          <button id="reset-data" class="pixel-btn" style="background-color: #e74c3c; color: white; font-size: 0.5rem;">Reset Tout</button>
+          <button
+            id="reset-data"
+            class="pixel-btn"
+            style="background-color: #e74c3c; color: white; font-size: 0.5rem"
+          >
+            Reset Tout
+          </button>
         </div>
       </div>
     </div>
 
     <div id="auth-modal" class="modal hidden">
-        <div class="parchment" style="text-align: center;">
-            <button id="close-auth" class="close-btn">X</button>
-            <h2 id="auth-title">Connexion</h2>
-            
-            <form id="auth-form" style="display: flex; flex-direction: column; gap: 10px; margin-top: 20px;">
-                <input type="text" id="auth-username" placeholder="Pseudo" class="pixel-input" required />
-                <input type="password" id="auth-password" placeholder="Mot de passe" class="pixel-input" required />
-                
-                <button type="submit" class="btn-login">Valider</button>
-            </form>
+      <div class="parchment" style="text-align: center">
+        <button id="close-auth" class="close-btn">X</button>
+        <h2 id="auth-title">Connexion</h2>
 
-            <p style="margin-top: 15px; font-size: 0.6rem;">
-                <a href="#" id="toggle-auth-mode">Pas de compte ? S'inscrire</a>
-            </p>
-            <div id="auth-message" style="color: red; font-size: 0.6rem; margin-top: 10px; height: 10px;"></div>
-        </div>
+        <form
+          id="auth-form"
+          style="
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 20px;
+          "
+        >
+          <input
+            type="text"
+            id="auth-username"
+            placeholder="Pseudo"
+            class="pixel-input"
+            required
+          />
+          <input
+            type="password"
+            id="auth-password"
+            placeholder="Mot de passe"
+            class="pixel-input"
+            required
+          />
+
+          <button type="submit" class="btn-login">Valider</button>
+        </form>
+
+        <p style="margin-top: 15px; font-size: 0.6rem">
+          <a href="#" id="toggle-auth-mode">Pas de compte ? S'inscrire</a>
+        </p>
+        <div
+          id="auth-message"
+          style="color: red; font-size: 0.6rem; margin-top: 10px; height: 10px"
+        ></div>
+      </div>
     </div>
 
     <div id="leaderboard-modal" class="modal hidden">
-        <div class="parchment">
-            <button id="close-leaderboard" class="close-btn">X</button>
-            <h2 style="color: #e67e22; text-shadow: 2px 2px 0 #000;">🏆 MEILLEURS GUERRIERS</h2>
-            
-            <table id="leaderboard-table" style="width: 100%; margin-top: 20px; border-collapse: collapse;">
-                <thead>
-                    <tr style="border-bottom: 2px solid #333;">
-                        <th style="padding: 10px;">Rang</th>
-                        <th>Joueur</th>
-                        <th>Score Solo</th>
-                    </tr>
-                </thead>
-                <tbody id="leaderboard-body">
-                    <tr><td colspan="3">Chargement...</td></tr>
-                </tbody>
-            </table>
-        </div>
+      <div class="parchment">
+        <button id="close-leaderboard" class="close-btn">X</button>
+        <h2 style="color: #e67e22; text-shadow: 2px 2px 0 #000">
+          🏆 MEILLEURS GUERRIERS
+        </h2>
+
+        <table
+          id="leaderboard-table"
+          style="width: 100%; margin-top: 20px; border-collapse: collapse"
+        >
+          <thead>
+            <tr style="border-bottom: 2px solid #333">
+              <th style="padding: 10px">Rang</th>
+              <th>Joueur</th>
+              <th>Score Solo</th>
+            </tr>
+          </thead>
+          <tbody id="leaderboard-body">
+            <tr>
+              <td colspan="3">Chargement...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
 
+    <div id="room-modal" class="modal hidden">
+      <div class="parchment" style="text-align: center">
+        <button id="close-room" class="close-btn">X</button>
+        <h2>Multijoueur</h2>
+
+        <div id="room-choice-view">
+          <button
+            id="btn-create-room"
+            class="btn-login"
+            style="width: 100%; margin-bottom: 10px"
+          >
+            Créer un salon
+          </button>
+          <button id="btn-show-join" class="btn-login" style="width: 100%">
+            Rejoindre un salon
+          </button>
+        </div>
+
+        <div id="room-created-view" class="hidden">
+          <p>Code du salon :</p>
+          <h1
+            id="display-room-code"
+            style="color: #e67e22; letter-spacing: 5px"
+          >
+            ----
+          </h1>
+          <p style="font-size: 0.6rem">En attente d'un adversaire...</p>
+        </div>
+
+        <div id="room-join-view" class="hidden">
+          <input
+            type="text"
+            id="join-room-input"
+            placeholder="Entrez le code"
+            class="pixel-input"
+            maxlength="6"
+            style="text-align: center; margin-bottom: 10px"
+          />
+          <button id="btn-confirm-join" class="btn-login" style="width: 100%">
+            Rejoindre
+          </button>
+          <button
+            id="btn-back-room"
+            class="nav-item"
+            style="
+              border: none;
+              background: none;
+              font-size: 0.5rem;
+              margin-top: 10px;
+            "
+          >
+            Retour
+          </button>
+        </div>
+      </div>
+      <div id="room-lobby-view" class="hidden">
+        <div
+          class="match-display"
+          style="
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            margin: 20px 0;
+          "
+        >
+          <div class="lobby-player">
+            <p style="font-size: 0.5rem">TOI</p>
+            <span id="lobby-my-name" style="color: #3498db">...</span>
+          </div>
+          <h2 style="color: #e74c3c">VS</h2>
+          <div class="lobby-player">
+            <p style="font-size: 0.5rem">ADVERSAIRE</p>
+            <span id="lobby-enemy-name" style="color: #e67e22"
+              >En attente...</span
+            >
+          </div>
+        </div>
+
+        <button
+          id="btn-start-multi"
+          class="btn-login hidden"
+          style="width: 100%; background-color: #27ae60"
+        >
+          LANCER LE COMBAT !
+        </button>
+        <p id="wait-msg" style="font-size: 0.5rem; margin-top: 10px">
+          En attente de l'hôte...
+        </p>
+      </div>
+    </div>
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
     <script type="module" src="js/main.js"></script>
   </body>
 </html>

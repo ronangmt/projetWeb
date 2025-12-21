@@ -9,23 +9,27 @@ document.addEventListener("DOMContentLoaded", () => {
   const body = document.body;
 
   if (settingsBtn) {
-    settingsBtn.addEventListener("click", () => settingsModal.classList.remove("hidden"));
-    closeSettingsBtn.addEventListener("click", () => settingsModal.classList.add("hidden"));
+    settingsBtn.addEventListener("click", () =>
+      settingsModal.classList.remove("hidden")
+    );
+    closeSettingsBtn.addEventListener("click", () =>
+      settingsModal.classList.add("hidden")
+    );
     settingsModal.addEventListener("click", (e) => {
       if (e.target === settingsModal) settingsModal.classList.add("hidden");
     });
   }
 
-  if (localStorage.getItem('theme') === 'dark') {
-      body.classList.add('dark-mode');
-      themeToggleBtn.textContent = "🌙 Nuit";
+  if (localStorage.getItem("theme") === "dark") {
+    body.classList.add("dark-mode");
+    themeToggleBtn.textContent = "🌙 Nuit";
   }
 
   themeToggleBtn.addEventListener("click", () => {
-      body.classList.toggle("dark-mode");
-      const isDark = body.classList.contains("dark-mode");
-      themeToggleBtn.textContent = isDark ? "🌙 Nuit" : "☀️ Jour";
-      localStorage.setItem('theme', isDark ? 'dark' : 'light');
+    body.classList.toggle("dark-mode");
+    const isDark = body.classList.contains("dark-mode");
+    themeToggleBtn.textContent = isDark ? "🌙 Nuit" : "☀️ Jour";
+    localStorage.setItem("theme", isDark ? "dark" : "light");
   });
 
   // --- JEU ---
@@ -34,12 +38,13 @@ document.addEventListener("DOMContentLoaded", () => {
   const btnSolo = document.getElementById("btn-solo");
   const btnCampaign = document.getElementById("btn-campaign");
   const btnStats = document.getElementById("btn-stats"); // NOUVEAU
+  const btnMulti = document.getElementById("btn-multi");
 
-  const navButtons = [btnSolo, btnCampaign, btnStats];
+  const navButtons = [btnSolo, btnCampaign, btnStats, btnMulti];
 
   function setActiveButton(activeBtn) {
-      navButtons.forEach(btn => btn ? btn.classList.remove("active") : null);
-      if(activeBtn) activeBtn.classList.add("active");
+    navButtons.forEach((btn) => (btn ? btn.classList.remove("active") : null));
+    if (activeBtn) activeBtn.classList.add("active");
   }
 
   if (btnSolo) {
@@ -60,11 +65,23 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Écouteur pour le bouton stats
   if (btnStats) {
-      btnStats.addEventListener("click", (e) => {
-          e.preventDefault();
-          setActiveButton(btnStats);
-          game.setMode("STATS");
-      });
+    btnStats.addEventListener("click", (e) => {
+      e.preventDefault();
+      setActiveButton(btnStats);
+      game.setMode("STATS");
+    });
+  }
+
+  if (btnMulti) {
+    btnMulti.addEventListener("click", (e) => {
+      e.preventDefault();
+      if (!game.authManager.isLoggedIn()) {
+        alert("Tu dois être connecté pour jouer en Multi !");
+        return;
+      }
+      setActiveButton(btnMulti);
+      game.setMode("MULTI");
+    });
   }
 
   // Init
