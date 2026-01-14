@@ -232,94 +232,40 @@
     </div>
 
     <div id="room-modal" class="modal hidden">
-      <div class="parchment" style="text-align: center">
-        <button id="close-room" class="close-btn">X</button>
-        <h2>Multijoueur</h2>
+        <div class="parchment" style="text-align: center; min-width: 300px;">
+            <button id="close-room" class="close-btn">X</button>
+            <h2 style="color: #e74c3c;">⚔️ DUEL ⚔️</h2>
+            
+            <div id="room-choice-view">
+                <button id="btn-create-room" class="pixel-btn" style="width: 100%; margin-bottom: 15px;">Créer une Salle</button>
+                <div style="margin: 10px 0;">- OU -</div>
+                <button id="btn-show-join" class="pixel-btn" style="width: 100%; background-color: #3498db;">Rejoindre</button>
+            </div>
 
-        <div id="room-choice-view">
-          <button
-            id="btn-create-room"
-            class="btn-login"
-            style="width: 100%; margin-bottom: 10px"
-          >
-            Créer un salon
-          </button>
-          <button id="btn-show-join" class="btn-login" style="width: 100%">
-            Rejoindre un salon
-          </button>
-        </div>
+            <div id="room-created-view" class="hidden">
+                <h3 style="color: gold; margin-top: 0;">SALON D'ATTENTE</h3>
+                
+                <p>Ton code de salle :</p>
+                <div id="display-room-code" style="font-size: 2.5rem; color: #e67e22; font-weight: bold; margin: 10px 0; border: 2px dashed #555; padding: 10px;">????</div>
+                
+                <div style="display: flex; justify-content: space-around; margin: 15px 0; font-size: 0.8rem;">
+                    <div style="color: #3498db;">
+                        Moi : <br>
+                        <strong id="lobby-my-name">...</strong> </div>
+                    <div style="color: #e74c3c;">
+                        Adversaire : <br>
+                        <strong id="lobby-enemy-name">En attente...</strong> </div>
+                </div>
+                <p id="wait-msg" class="blink">En attente d'un adversaire...</p>
+                <button id="btn-start-multi" class="pixel-btn hidden" style="background-color: #2ecc71; width: 100%;">LANCER LE COMBAT !</button>
+            </div>
 
-        <div id="room-created-view" class="hidden">
-          <p>Code du salon :</p>
-          <h1
-            id="display-room-code"
-            style="color: #e67e22; letter-spacing: 5px"
-          >
-            ----
-          </h1>
-          <p style="font-size: 0.6rem">En attente d'un adversaire...</p>
+            <div id="room-join-view" class="hidden">
+                <input type="text" id="join-room-input" placeholder="CODE DE LA SALLE" class="pixel-input" style="text-transform: uppercase; text-align: center; font-size: 1.2rem;">
+                <button id="btn-confirm-join" class="pixel-btn" style="margin-top: 15px; width: 100%;">Valider</button>
+                <button id="btn-back-room" class="pixel-btn" style="background:none; border:none; color: #555; font-size: 0.8rem; margin-top: 10px;">Retour</button>
+            </div>
         </div>
-
-        <div id="room-join-view" class="hidden">
-          <input
-            type="text"
-            id="join-room-input"
-            placeholder="Entrez le code"
-            class="pixel-input"
-            maxlength="6"
-            style="text-align: center; margin-bottom: 10px"
-          />
-          <button id="btn-confirm-join" class="btn-login" style="width: 100%">
-            Rejoindre
-          </button>
-          <button
-            id="btn-back-room"
-            class="nav-item"
-            style="
-              border: none;
-              background: none;
-              font-size: 0.5rem;
-              margin-top: 10px;
-            "
-          >
-            Retour
-          </button>
-        </div>
-      </div>
-      <div id="room-lobby-view" class="hidden">
-        <div
-          class="match-display"
-          style="
-            display: flex;
-            align-items: center;
-            justify-content: space-around;
-            margin: 20px 0;
-          "
-        >
-          <div class="lobby-player">
-            <p style="font-size: 0.5rem">TOI</p>
-            <span id="lobby-my-name" style="color: #3498db">...</span>
-          </div>
-          <h2 style="color: #e74c3c">VS</h2>
-          <div class="lobby-player">
-            <p style="font-size: 0.5rem">ADVERSAIRE</p>
-            <span id="lobby-enemy-name" style="color: #e67e22"
-              >En attente...</span
-            >
-          </div>
-        </div>
-
-        <button
-          id="btn-start-multi"
-          class="btn-login hidden"
-          style="width: 100%; background-color: #27ae60"
-        >
-          LANCER LE COMBAT !
-        </button>
-        <p id="wait-msg" style="font-size: 0.5rem; margin-top: 10px">
-          En attente de l'hôte...
-        </p>
-      </div>
     </div>
     <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
     <script type="module" src="js/main.js"></script>
