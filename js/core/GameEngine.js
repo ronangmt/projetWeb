@@ -101,7 +101,18 @@ export class GameEngine {
         this.updateStatsUI();
         
         this.animManager.play('HURT');
-        this.flashUI('error'); 
+        this.flashUI('error');
+
+        if (this.socket) {
+            const hpPercent = (this.hero.currentHp / this.hero.maxHp) * 100;
+            
+            this.socket.emit('sendScore', {
+                roomID: this.currentRoom,
+                score: this.hero.totalCorrect, // On renvoie le score au passage
+                action: 'UPDATE_HP',           // NOUVELLE ACTION
+                hpValue: hpPercent             // Le pourcentage de vie restant
+            });
+        }
 
         if (this.hero.isDead()) {
             this.socket.emit('sendScore', {
@@ -113,18 +124,28 @@ export class GameEngine {
             this.gameOver(false); 
         }
 
-      } else if (data.action === 'HURT') {
+      else if (data.action === 'HURT') {
         const enemyImg = document.getElementById('enemy-img');
         if(enemyImg) {
             enemyImg.style.filter = "brightness(0.5) sepia(1) saturate(5) hue-rotate(-50deg)";
             setTimeout(() => (enemyImg.style.filter = "none"), 300);
         }
+      }
+      
+      else if (data.action === 'UPDATE_HP') {
+        const enemyHpBar = document.getElementById('enemy-hp-bar');
+        // On met à jour la largeur de la barre rouge
+        if (enemyHpBar) {
+            enemyHpBar.style.width = `${data.hpValue}%`;
+        }
+      }
 
-      } else if (data.action === 'DEATH') {
+      else if (data.action === 'DEATH') {
         this.stopTimer();
         this.isGameActive = false;
         this.gameOver(true);
       }
+    }
     });
 
     this.socket.on("playerJoined", (data) => {
