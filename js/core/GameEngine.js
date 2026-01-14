@@ -47,7 +47,6 @@ export class GameEngine {
       // Champs de statistiques
       statHighSolo: document.getElementById("stat-high-solo"),
       statHighCampagne: document.getElementById("stat-high-campagne"),
-      statMaxStreak: document.getElementById("stat-max-streak"),
       statLvlAdd: document.getElementById("stat-lvl-add"),
       statLvlSub: document.getElementById("stat-lvl-sub"),
       statLvlMul: document.getElementById("stat-lvl-mul"),
@@ -312,7 +311,6 @@ export class GameEngine {
 
     this.ui.statHighSolo.textContent = data.highScores.SOLO || 0;
     this.ui.statHighCampagne.textContent = data.highScores.CAMPAGNE || 0;
-    this.ui.statMaxStreak.textContent = this.statsManager.getBestStreak();
 
     this.ui.statLvlAdd.textContent = data.operations.ADDITION.level;
     this.ui.statLvlSub.textContent = data.operations.SUBTRACTION.level;

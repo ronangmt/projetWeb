@@ -27,10 +27,20 @@ const userSchema = new mongoose.Schema({
   username: { type: String, required: true, unique: true },
   password: { type: String, required: true },
   gameData: {
-    highScores: { SOLO: { type: Number, default: 0 } },
+    highScores: { 
+        SOLO: { type: Number, default: 0 },
+        CAMPAGNE: { type: Number, default: 0 } // Ajout du mode Campagne
+    },
+    operations: {
+        ADDITION: { count: { type: Number, default: 0 }, level: { type: Number, default: 1 } },
+        SUBTRACTION: { count: { type: Number, default: 0 }, level: { type: Number, default: 1 } },
+        MULTIPLICATION: { count: { type: Number, default: 0 }, level: { type: Number, default: 1 } },
+        DIVISION: { count: { type: Number, default: 0 }, level: { type: Number, default: 1 } }
+    },
     lastPlayed: { type: Date, default: Date.now },
   },
-});
+}, { minimize: false });
+
 const User = mongoose.model("User", userSchema);
 
 // --- ROUTES API ---
