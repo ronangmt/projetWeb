@@ -83,6 +83,61 @@ export class GameEngine {
     // Connexion au serveur avec le Token pour la sécurité
     this.socket = io("http://localhost:3000", {
       auth: { token: this.authManager.token },
+    })
+    
+    this.socket.on('opponentUpdate', (data) => {
+      // 1. Mettre à jour le score affiché de l'ennemi
+      const enemyScore = document.getElementById('enemy-score');
+      if (enemyScore) enemyScore.textContent = `Score: ${data.score}`;
+
+      // 2. Gérer les ACTIONS
+      if (data.action === 'ATTACK') {
+        // --- A. VISUEL : L'ennemi attaque ---
+        const enemyImg = document.getElementById('enemy-img');
+        if (enemyImg) {
+          enemyImg.classList.add('enemy-attack-anim');
+          setTimeout(() => enemyImg.classList.remove('enemy-attack-anim'), 300);
+        }
+
+        // --- B. LOGIQUE : JE PRENDS DES DÉGÂTS ! ---
+        // On enlève 10 PV (ou plus selon votre équilibrage)
+        this.hero.takeDamage(10); 
+        
+        // On met à jour MA barre de vie
+        this.updateStatsUI();
+        
+        // On joue MON animation de blessure + Flash Rouge
+        this.animManager.play('HURT');
+        this.flashUI('error'); 
+
+        // --- C. VÉRIFICATION : SUIS-JE MORT ? ---
+        if (this.hero.isDead()) {
+            // 1. Je préviens l'autre que j'ai perdu
+            this.socket.emit('sendScore', {
+                roomID: this.currentRoom,
+                score: this.hero.totalCorrect,
+                action: 'DEATH' 
+            });
+            
+            // 2. Je lance mon Game Over (Défaite)
+            this.gameOver(false); 
+        }
+
+      } else if (data.action === 'HURT') {
+        // L'ennemi s'est trompé (optionnel : effet visuel sur lui)
+        const enemyImg = document.getElementById('enemy-img');
+        if(enemyImg) {
+            enemyImg.style.filter = "brightness(0.5) sepia(1) saturate(5) hue-rotate(-50deg)";
+            setTimeout(() => (enemyImg.style.filter = "none"), 300);
+        }
+
+      } else if (data.action === 'DEATH') {
+        // --- D. VICTOIRE : L'autre est mort ---
+        this.stopTimer();
+        this.isGameActive = false;
+        // J'appelle gameOver avec 'true' pour dire que J'AI GAGNÉ
+        this.gameOver(true);
+      }
     });
 
     this.socket.on("playerJoined", (data) => {
