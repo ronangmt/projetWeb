@@ -232,41 +232,49 @@
     </div>
 
     <div id="room-modal" class="modal hidden">
-        <div class="parchment" style="text-align: center; min-width: 300px;">
-            <button id="close-room" class="close-btn">X</button>
-            <h2 style="color: #e74c3c;">⚔️ DUEL ⚔️</h2>
-            
-            <div id="room-choice-view">
-                <button id="btn-create-room" class="pixel-btn" style="width: 100%; margin-bottom: 15px;">Créer une Salle</button>
-                <div style="margin: 10px 0;">- OU -</div>
-                <button id="btn-show-join" class="pixel-btn" style="width: 100%; background-color: #3498db;">Rejoindre</button>
-            </div>
+      <div class="parchment" style="text-align: center; min-width: 300px;">
+        <button id="close-room" class="close-btn">X</button>
+        <h2 style="color: #e74c3c;">⚔️ DUEL ⚔️</h2>
 
-            <div id="room-created-view" class="hidden">
-                <h3 style="color: gold; margin-top: 0;">SALON D'ATTENTE</h3>
-                
-                <p>Ton code de salle :</p>
-                <div id="display-room-code" style="font-size: 2.5rem; color: #e67e22; font-weight: bold; margin: 10px 0; border: 2px dashed #555; padding: 10px;">????</div>
-                
-                <div style="display: flex; justify-content: space-around; margin: 15px 0; font-size: 0.8rem;">
-                    <div style="color: #3498db;">
-                        Moi : <br>
-                        <strong id="lobby-my-name">...</strong> </div>
-                    <div style="color: #e74c3c;">
-                        Adversaire : <br>
-                        <strong id="lobby-enemy-name">En attente...</strong> </div>
-                </div>
-                <p id="wait-msg" class="blink">En attente d'un adversaire...</p>
-                <button id="btn-start-multi" class="pixel-btn hidden" style="background-color: #2ecc71; width: 100%;">LANCER LE COMBAT !</button>
-            </div>
-
-            <div id="room-join-view" class="hidden">
-                <input type="text" id="join-room-input" placeholder="CODE DE LA SALLE" class="pixel-input" style="text-transform: uppercase; text-align: center; font-size: 1.2rem;">
-                <button id="btn-confirm-join" class="pixel-btn" style="margin-top: 15px; width: 100%;">Valider</button>
-                <button id="btn-back-room" class="pixel-btn" style="background:none; border:none; color: #555; font-size: 0.8rem; margin-top: 10px;">Retour</button>
-            </div>
+        <div id="room-choice-view">
+            <button id="btn-create-room" class="btn-login" style="width: 100%; margin-bottom: 15px;">Créer une Salle</button>
+            <div style="margin: 10px 0;">- OU -</div>
+            <button id="btn-show-join" class="btn-login" style="width: 100%; background-color: #3498db;">Rejoindre</button>
         </div>
-    </div>
+
+        <div id="room-created-view" class="hidden">
+            <p>Ton code de salle :</p>
+            <div id="display-room-code" style="font-size: 2.5rem; color: #e67e22; font-weight: bold; margin: 15px 0; border: 2px dashed #555; padding: 10px;">????</div>
+            <p id="wait-msg" class="blink">En attente d'un adversaire...</p>
+            <button id="btn-start-multi" class="pixel-btn hidden" style="background-color: #2ecc71; width: 100%;">LANCER LE COMBAT !</button>
+        </div>
+
+        <div id="room-join-view" class="hidden">
+            <input type="text" id="join-room-input" placeholder="CODE DE LA SALLE" class="pixel-input" maxlength="6" style="text-transform: uppercase; text-align: center; font-size: 1.2rem;">
+            <button id="btn-confirm-join" class="pixel-btn" style="margin-top: 15px; width: 100%;">Valider</button>
+            <button id="btn-back-room" class="pixel-btn" style="background:none; border:none; color: #555; font-size: 0.8rem; margin-top: 10px;">Retour</button>
+        </div>
+
+        <div id="room-lobby-view" class="hidden">
+            <h3 style="color: gold; margin-top: 0;">SALON D'ATTENTE</h3>
+            
+            <p>Ton code de salle :</p>
+            <div id="display-room-code" style="font-size: 2.5rem; color: #e67e22; font-weight: bold; margin: 10px 0; border: 2px dashed #555; padding: 10px;">????</div>
+            
+            <div class="match-display" style="display: flex; justify-content: space-around; margin: 15px 0; font-size: 0.8rem;">
+                <div class="lobby-player" style="color: #3498db;">
+                    Moi : <br>
+                    <span id="lobby-my-name" style="color: #3498db">...</span>
+                </div>
+                <div class="lobby-player" style="color: #e74c3c;">
+                    Adversaire : <br>
+                    <span id="lobby-enemy-name" style="color: #e67e22">En attente...</span>
+                </div>
+            </div>
+            <p id="wait-msg" class="blink">En attente d'un adversaire...</p>
+            <button id="btn-start-multi" class="btn-login hidden" style="background-color: #2ecc71; width: 100%;">LANCER LE COMBAT !</button>
+        </div>
+    
     <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
     <script type="module" src="js/main.js"></script>
   </body>
