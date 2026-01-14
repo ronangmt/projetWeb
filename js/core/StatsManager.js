@@ -66,11 +66,26 @@ export class StatsManager {
         return false;
     }
 
-    updateMaxStreak(streak) {
-        if (streak > this.data.maxStreak) {
-            this.data.maxStreak = streak;
+    updateMaxStreak(streak, mode) {
+        // Sécurité : s'assure que maxStreak est bien un objet
+        if (typeof this.data.maxStreak !== 'object') {
+            this.data.maxStreak = { SOLO: 0, CAMPAGNE: 0 };
+        }
+
+        // On ignore les modes non sauvegardés (ex: MULTI)
+        if (this.data.maxStreak[mode] === undefined) return;
+
+        // On compare le streak avec celui du MODE spécifique
+        if (streak > this.data.maxStreak[mode]) {
+            this.data.maxStreak[mode] = streak;
             this.saveData();
         }
+    }
+
+    getBestStreak() {
+        const solo = (this.data.maxStreak && this.data.maxStreak.SOLO) || 0;
+        const camp = (this.data.maxStreak && this.data.maxStreak.CAMPAGNE) || 0;
+        return Math.max(solo, camp);
     }
 
     // Augmente le compteur d'une opération. 

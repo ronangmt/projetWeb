@@ -19,8 +19,8 @@ app.use(express.json());
 // --- CONNEXION MONGODB ---
 mongoose
   .connect(process.env.MONGO_URI)
-  .then(() => console.log("✅ Connecté à MongoDB"))
-  .catch((err) => console.error("❌ Erreur MongoDB:", err));
+  .then(() => console.log("Connecté à MongoDB"))
+  .catch((err) => console.error("Erreur MongoDB:", err));
 
 // --- MODÈLE UTILISATEUR ---
 const userSchema = new mongoose.Schema({
@@ -117,7 +117,7 @@ io.on("connection", (socket) => {
   });
 
   socket.on("disconnect", () => {
-    console.log(`❌ ${socket.username} déconnecté`);
+    console.log(`${socket.username} déconnecté`);
   });
 });
 
@@ -157,5 +157,5 @@ app.get("/leaderboard", async (req, res) => {
 // --- FIX : LANCEMENT AVEC server.listen ---
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () =>
-  console.log(`🚀 Serveur MathArena prêt sur le port ${PORT}`)
+  console.log(`Serveur MathArena prêt sur le port ${PORT}`)
 );

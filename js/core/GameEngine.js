@@ -312,7 +312,7 @@ export class GameEngine {
 
     this.ui.statHighSolo.textContent = data.highScores.SOLO || 0;
     this.ui.statHighCampagne.textContent = data.highScores.CAMPAGNE || 0;
-    this.ui.statMaxStreak.textContent = data.maxStreak;
+    this.ui.statMaxStreak.textContent = this.statsManager.getBestStreak();
 
     this.ui.statLvlAdd.textContent = data.operations.ADDITION.level;
     this.ui.statLvlSub.textContent = data.operations.SUBTRACTION.level;
