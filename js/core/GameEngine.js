@@ -310,8 +310,8 @@ export class GameEngine {
       this.ui.statGlobalLevel.textContent = globalLevel;
     }
 
-    this.ui.statHighSolo.textContent = data.highScores.SOLO;
-    this.ui.statHighCampagne.textContent = data.highScores.CAMPAGNE;
+    this.ui.statHighSolo.textContent = data.highScores.SOLO || 0;
+    this.ui.statHighCampagne.textContent = data.highScores.CAMPAGNE || 0;
     this.ui.statMaxStreak.textContent = data.maxStreak;
 
     this.ui.statLvlAdd.textContent = data.operations.ADDITION.level;
@@ -401,7 +401,7 @@ export class GameEngine {
     // --------------------
 
     this.statsManager.registerCorrectOperation(this.currentProblem.type);
-    this.statsManager.updateMaxStreak(this.hero.streak);
+    this.statsManager.updateMaxStreak(this.hero.streak, this.mode);
 
     const randAtk = Math.floor(Math.random() * 3) + 1;
     this.animManager.play(`ATTACK${randAtk}`);

@@ -9,7 +9,7 @@ export class StatsManager {
     getDefaultData() {
         return {
             highScores: { SOLO: 0, CAMPAGNE: 0 },
-            maxStreak: 0,
+            maxStreak: { SOLO: 0, CAMPAGNE: 0 },
             operations: {
                 ADDITION: { count: 0, level: 1 },
                 SUBTRACTION: { count: 0, level: 1 },
@@ -49,11 +49,20 @@ export class StatsManager {
     // --- MÉTODHES DE MISE À JOUR ---
 
     updateHighScore(mode, score) {
+        if (!this.data.highScores) {
+            this.data.highScores = { SOLO: 0, CAMPAGNE: 0 };
+        }
+
+        if (this.data.highScores[mode] === undefined) {
+            this.data.highScores[mode] = 0;
+        }
+
         if (score > this.data.highScores[mode]) {
             this.data.highScores[mode] = score;
             this.saveData();
-            return true; // Nouveau record !
+            return true;
         }
+        
         return false;
     }
 
