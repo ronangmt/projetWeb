@@ -438,6 +438,16 @@ body.dark-mode .stat-group {
     outline: none;
 }
 
+.code-input {
+    padding: 10px;
+    font-family: 'Press Start 2P', cursive;
+    font-size: 0.7rem;
+    border: 2px solid #4a3b2a;
+    background-color: rgba(255, 255, 255, 0.8);
+    outline: none;
+    width: 300px;
+}
+
 #user-display {
     text-transform: uppercase;
     text-shadow: 1px 1px 0 #000;

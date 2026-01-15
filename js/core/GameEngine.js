@@ -36,6 +36,7 @@ export class GameEngine {
       timerBar: document.getElementById("timer-bar"),
       streakDisplay: document.getElementById("streak-count"),
       heroSprite: document.getElementById("player-img"),
+      enemySprite: document.getElementById("enemy-img"),
       globalLevelDisplay: document.getElementById("global-level"),
       arena: document.getElementById("game-arena"),
 
@@ -72,6 +73,15 @@ export class GameEngine {
     );
     this.animManager.play("IDLE");
 
+    if (this.ui.enemySprite) {
+      this.enemyAnimManager = new AnimationManager(
+        this.ui.enemySprite,
+        characterAnimations
+      );
+      // On le met en pause au début, il s'activera en mode MULTI
+      this.enemyAnimManager.stop();
+    }
+
     this.bindEvents();
     this.setupAuthUI();
     this.updateIdentityUI();
@@ -80,96 +90,176 @@ export class GameEngine {
   }
 
   setupSocket() {
-    // Connexion au serveur avec le Token pour la sécurité
+    // 1. Initialisation de la connexion
     this.socket = io("http://localhost:3000", {
       auth: { token: this.authManager.token },
-    })
-    
-    this.socket.on('opponentUpdate', (data) => {
-      const enemyScore = document.getElementById('enemy-score');
-      if (enemyScore) enemyScore.textContent = `Score: ${data.score}`;
-
-      if (data.action === 'ATTACK') {
-        const enemyImg = document.getElementById('enemy-img');
-        if (enemyImg) {
-          enemyImg.classList.add('enemy-attack-anim');
-          setTimeout(() => enemyImg.classList.remove('enemy-attack-anim'), 300);
-        }
-
-        this.hero.takeDamage(10); 
-        
-        this.updateStatsUI();
-        
-        this.animManager.play('HURT');
-        this.flashUI('error');
-
-        if (this.socket) {
-            const hpPercent = (this.hero.currentHp / this.hero.maxHp) * 100;
-            
-            this.socket.emit('sendScore', {
-                roomID: this.currentRoom,
-                score: this.hero.totalCorrect, // On renvoie le score au passage
-                action: 'UPDATE_HP',           // NOUVELLE ACTION
-                hpValue: hpPercent             // Le pourcentage de vie restant
-            });
-        }
-
-        if (this.hero.isDead()) {
-            this.socket.emit('sendScore', {
-                roomID: this.currentRoom,
-                score: this.hero.totalCorrect,
-                action: 'DEATH' 
-            });
-            
-            this.gameOver(false); 
-        }
-
-      else if (data.action === 'HURT') {
-        const enemyImg = document.getElementById('enemy-img');
-        if(enemyImg) {
-            enemyImg.style.filter = "brightness(0.5) sepia(1) saturate(5) hue-rotate(-50deg)";
-            setTimeout(() => (enemyImg.style.filter = "none"), 300);
-        }
-      }
-      
-      else if (data.action === 'UPDATE_HP') {
-        const enemyHpBar = document.getElementById('enemy-hp-bar');
-        // On met à jour la largeur de la barre rouge
-        if (enemyHpBar) {
-            enemyHpBar.style.width = `${data.hpValue}%`;
-        }
-      }
-
-      else if (data.action === 'DEATH') {
-        this.stopTimer();
-        this.isGameActive = false;
-        this.gameOver(true);
-      }
-    }
     });
 
-    this.socket.on("playerJoined", (data) => {
-      console.log(`${data.username} est arrivé !`);
+    // 2. Gestion des mises à jour de l'adversaire (Le cœur du Multi)
+    this.socket.on("opponentUpdate", (data) => {
+      const enemyScore = document.getElementById("enemy-score");
+      const enemyImg = document.getElementById("enemy-img");
+      const enemyNameArena = document.getElementById("enemy-name");
 
-      // --- FIX : L'Hôte doit cacher l'écran du code et afficher le Lobby ---
+      if (enemyScore) enemyScore.textContent = `Score: ${data.score}`;
+
+      switch (data.action) {
+        case "ATTACK":
+          // L'adversaire a bien répondu : il t'attaque sur TON écran
+          if (this.enemyAnimManager) {
+            const randAtk = Math.floor(Math.random() * 3) + 1;
+            this.enemyAnimManager.play(`ATTACK${randAtk}`);
+          }
+
+          // Ton héros subit les dégâts et joue son animation HURT
+          this.hero.takeDamage(10);
+          this.updateStatsUI();
+          this.animManager.play("HURT");
+          this.flashUI("error");
+
+          // On renvoie tes PV mis à jour à l'adversaire
+          this.socket.emit("sendScore", {
+            roomID: this.currentRoom,
+            score: this.hero.totalCorrect,
+            action: "UPDATE_HP",
+            hpValue: (this.hero.currentHp / this.hero.maxHp) * 100,
+          });
+          break;
+
+        case "HURT":
+          // L'adversaire s'est trompé : il joue son animation HURT sur ton écran
+          if (this.enemyAnimManager) {
+            this.enemyAnimManager.play("HURT");
+          }
+          if (data.hpValue !== undefined && this.ui.timerBar) {
+            this.ui.timerBar.style.width = `${data.hpValue}%`;
+
+            // Petit effet visuel : la barre clignote en blanc brièvement
+            this.ui.timerBar.style.filter = "brightness(2)";
+            setTimeout(() => (this.ui.timerBar.style.filter = "none"), 100);
+          }
+          break;
+
+        case "UPDATE_HP":
+          // Mise à jour de la barre de vie (timer-bar) de l'adversaire
+          if (this.ui.timerBar) {
+            this.ui.timerBar.style.width = `${data.hpValue}%`;
+          }
+          // IMPORTANT : On joue l'animation HURT car il vient de perdre des PV
+          if (this.enemyAnimManager) {
+            this.enemyAnimManager.play("HURT");
+          }
+          break;
+
+        case "DEATH":
+          // L'adversaire n'a plus de PV : il meurt sur ton écran
+          if (this.enemyAnimManager) {
+            this.enemyAnimManager.play("DEATH");
+          }
+          this.stopTimer();
+          this.isGameActive = false;
+          this.gameOver(true); // Victoire
+          break;
+
+        case "IDENTITY_EXCHANGE":
+          if (this.ui.lobbyEnemyName)
+            this.ui.lobbyEnemyName.textContent = data.username;
+          const enemyNameArena = document.getElementById("enemy-name");
+          if (enemyNameArena) enemyNameArena.textContent = data.username;
+          break;
+      }
+      // --- ACTION : L'ADVERSAIRE M'ATTAQUE (Il a eu une bonne réponse) ---
+      if (data.action === "ATTACK") {
+        if (enemyImg) {
+          enemyImg.classList.add("enemy-attack-anim");
+          setTimeout(() => enemyImg.classList.remove("enemy-attack-anim"), 300);
+        }
+
+        // Je subis les dégâts localement
+        this.hero.takeDamage(10);
+        this.updateStatsUI();
+        this.animManager.play("HURT");
+        this.flashUI("error");
+
+        // CRUCIAL : J'envoie MON nouveau % de vie à l'adversaire pour qu'il mette à jour sa vue
+
+        const myHpPercent = (this.hero.currentHp / this.hero.maxHp) * 100;
+        this.socket.emit("sendScore", {
+          roomID: this.currentRoom,
+          score: this.hero.totalCorrect,
+          action: "UPDATE_HP",
+          hpValue: myHpPercent,
+        });
+
+        // Si je meurs suite à cette attaque
+        if (this.hero.isDead()) {
+          this.socket.emit("sendScore", {
+            roomID: this.currentRoom,
+            score: this.hero.totalCorrect,
+            action: "DEATH",
+          });
+          this.gameOver(false);
+        }
+      }
+
+      // --- ACTION : L'ADVERSAIRE SE TROMPE ---
+      else if (data.action === "HURT") {
+        if (enemyImg) {
+          enemyImg.style.filter =
+            "brightness(0.5) sepia(1) saturate(5) hue-rotate(-50deg)";
+          setTimeout(() => (enemyImg.style.filter = "none"), 300);
+        }
+      }
+
+      // --- ACTION : MISE À JOUR DE LA BARRE DE VIE ADVERSE SUR MON ÉCRAN ---
+      else if (data.action === "UPDATE_HP") {
+        if (this.ui.timerBar) {
+          this.ui.timerBar.style.width = `${data.hpValue}%`;
+        }
+        // if (enemyHpBar) {
+        //   // On force l'opacité et la couleur pour être sûr
+        //   enemyHpBar.style.opacity = "1";
+        //   enemyHpBar.style.width = `${data.hpValue}%`;
+        // }
+      }
+
+      // --- ACTION : L'ADVERSAIRE EST MORT ---
+      else if (data.action === "DEATH") {
+        this.stopTimer();
+        this.isGameActive = false;
+        this.gameOver(true); // true = Victoire
+      }
+
+      // --- ACTION : ÉCHANGE DE NOMS ---
+      else if (data.action === "IDENTITY_EXCHANGE") {
+        if (this.ui.lobbyEnemyName)
+          this.ui.lobbyEnemyName.textContent = data.username;
+        if (enemyNameArena) enemyNameArena.textContent = data.username;
+      }
+    });
+
+    // 3. Gestion de l'arrivée d'un joueur dans le salon
+    this.socket.on("playerJoined", (data) => {
+      console.log(`${data.username} a rejoint la salle.`);
+
+      // UI : On bascule du code vers le Lobby
       if (this.ui.roomCreatedView)
         this.ui.roomCreatedView.classList.add("hidden");
       if (this.ui.roomLobbyView)
         this.ui.roomLobbyView.classList.remove("hidden");
-      // -------------------------------------------------------------------
 
       if (this.ui.lobbyEnemyName)
         this.ui.lobbyEnemyName.textContent = data.username;
-
       const enemyNameArena = document.getElementById("enemy-name");
       if (enemyNameArena) enemyNameArena.textContent = data.username;
 
+      // L'hôte peut maintenant lancer
       if (this.ui.btnStartMulti) {
         this.ui.btnStartMulti.classList.remove("hidden");
         this.ui.waitMsg.classList.add("hidden");
       }
 
-      // Échange d'identité pour que l'invité voit aussi le nom de l'hôte
+      // On répond avec notre propre identité
       this.socket.emit("sendScore", {
         roomID: this.currentRoom,
         score: 0,
@@ -177,24 +267,13 @@ export class GameEngine {
       });
     });
 
-    // Écouter le lancement de la partie
+    // 4. Lancement de la partie
     this.socket.on("gameStart", () => {
-      this.ui.roomModal.classList.add("hidden");
-      this.start(); // Lance le jeu pour les deux joueurs
+      if (this.ui.roomModal) this.ui.roomModal.classList.add("hidden");
+      this.start();
     });
 
-    // Gérer l'échange d'identité
-    this.socket.on("opponentUpdate", (data) => {
-      if (data.action === "IDENTITY_EXCHANGE") {
-        if (this.ui.lobbyEnemyName)
-          this.ui.lobbyEnemyName.textContent = data.username;
-        const enemyNameArena = document.getElementById("enemy-name");
-        if (enemyNameArena) enemyNameArena.textContent = data.username;
-      } else {
-        this.updateEnemyUI(data); // Gestion normale des scores
-      }
-    });
-
+    // 5. Gestion d'erreur
     this.socket.on("connect_error", (err) => {
       console.error("Erreur de connexion socket:", err.message);
     });
@@ -316,7 +395,9 @@ export class GameEngine {
 
     const enemyName = document.getElementById("enemy-name");
     const enemyScore = document.getElementById("enemy-score");
-    const timerBar = document.getElementById("timer-bar");
+
+    const timerBar = this.ui.timerBar; // C'est l'élément id="timer-bar"
+    //const timerBar = document.getElementById("timer-bar");
 
     // 1. GESTION DES VUES (Droite)
     if (this.mode === "STATS") {
@@ -339,13 +420,18 @@ export class GameEngine {
       if (enemyName) enemyName.textContent = "[Bot Chrono]";
       if (enemyScore) enemyScore.textContent = "Temps";
       if (timerBar) timerBar.style.backgroundColor = "#3498db";
+      if (this.enemyAnimManager) this.enemyAnimManager.stop();
       this.ui.timerBar.parentElement.style.opacity = "1";
       subMsg = "Soin actif, Auto-validation & Chrono";
     } else if (this.mode === "MULTI" || this.mode === "DUEL") {
       if (enemyName) enemyName.textContent = "Hors-ligne";
       if (enemyScore) enemyScore.textContent = "Prêt ?";
       if (timerBar) timerBar.style.backgroundColor = "#e74c3c";
-      this.ui.timerBar.parentElement.style.opacity = "0.3";
+      this.ui.timerBar.parentElement.style.opacity = "1";
+
+      if (this.enemyAnimManager) {
+        this.enemyAnimManager.play("IDLE");
+      }
 
       // ON SUPPRIME la ligne arena1 ici car c'est setupRoomLogic qui s'en occupe désormais.
 
@@ -389,6 +475,23 @@ export class GameEngine {
     this.animManager.play("WALK");
     this.ui.input.style.display = "block";
     this.updateStatsUI();
+    // --- RÉINITIALISATION DE L'ADVERSAIRE (Le correctif) ---
+    if (this.mode === "MULTI") {
+      // 1. On remet l'animation à IDLE ou WALK
+      if (this.enemyAnimManager) {
+        this.enemyAnimManager.play("IDLE");
+      }
+
+      // 2. On remet sa barre de vie visuelle à 100%
+      if (this.ui.timerBar) {
+        this.ui.timerBar.style.width = "100%";
+        this.ui.timerBar.style.backgroundColor = "#e74c3c"; // Rouge pour le duel
+      }
+
+      // 3. On s'assure que son image n'a plus de filtres (filtre HURT par exemple)
+      const enemyImg = document.getElementById("enemy-img");
+      if (enemyImg) enemyImg.style.filter = "none";
+    }
     this.nextTurn();
   }
 
@@ -486,10 +589,13 @@ export class GameEngine {
 
     // ENVOI MULTI : On prévient qu'on a été touché
     if (this.mode === "MULTI" && this.socket) {
+      const myHpPercent = (this.hero.currentHp / this.hero.maxHp) * 100;
+
       this.socket.emit("sendScore", {
         roomID: this.currentRoom,
         score: this.hero.totalCorrect,
         action: "HURT",
+        hpValue: myHpPercent, // Crucial pour que l'adversaire voie ta barre descendre
       });
     }
   }
@@ -550,29 +656,32 @@ export class GameEngine {
     this.isGameActive = false;
     this.ui.input.style.display = "none";
 
-
     // --- MESSAGES DE FIN ---
     let title = "GAME OVER";
     let subText = "Tu as été vaincu.";
     let color = "red";
 
     if (this.mode === "MULTI") {
-        if (isVictory) {
-            title = "VICTOIRE ! 🏆";
-            subText = "Ton adversaire a succombé !";
-            color = "#2ecc71"; // Vert
-            this.animManager.play('ATTACK1'); // Pose de victoire
-        } else {
-            title = "DÉFAITE 💀";
-            subText = "Tu n'as plus de PV.";
-            this.animManager.play('DEATH'); // Animation de mort
-        }
+      if (isVictory) {
+        title = "VICTOIRE ! 🏆";
+        subText = "Ton adversaire a succombé !";
+        color = "#2ecc71"; // Vert
+        this.animManager.play("ATTACK1"); // Pose de victoire
+      } else {
+        title = "DÉFAITE 💀";
+        subText = "Tu n'as plus de PV.";
+        this.animManager.play("DEATH"); // Animation de mort
+      }
     } else {
-        this.animManager.play('DEATH');
+      this.animManager.play("DEATH");
     }
 
-    const isNewRecord = this.mode !== "MULTI" && this.statsManager.updateHighScore(this.mode, this.hero.totalCorrect);
-    let recordMsg = isNewRecord ? "<br><span style='color: gold;'>NOUVEAU RECORD !</span>" : "";
+    const isNewRecord =
+      this.mode !== "MULTI" &&
+      this.statsManager.updateHighScore(this.mode, this.hero.totalCorrect);
+    let recordMsg = isNewRecord
+      ? "<br><span style='color: gold;'>NOUVEAU RECORD !</span>"
+      : "";
 
     this.updateMessage(
       `<h2 style="color:${color}; margin:0;">${title}</h2>
