@@ -25,3 +25,18 @@ Dans ce mode de jeu, le joueur affronte des bots. Chaque bot a son propre niveau
 ### Multijoueur
 
 Dans ce mode de jeu, le joueur a la possibilité de tester ses capacités en calcul mental face à un autre joueur sur le site. La connexion entre les deux peut être aléatoire ou via un code pour rejoindre une partie entre amis.
+
+## [Lien de démonstration](https://youtu.be/G7NYTkmv-E0)
+
+## Bugs connus et amélioration
+
+### Bugs
+
+- Mauvaise gestion de tous les cas de figure en mode multi
+- Changement de nom de l'adversaire lors du passage du mode campagne à solo
+
+### Possibilités d'amélioration
+
+- Sélection du personnage parmi un large choix
+- Mode multijoueur en ligne en plus du local
+- Plus grande diversité dans les questions
